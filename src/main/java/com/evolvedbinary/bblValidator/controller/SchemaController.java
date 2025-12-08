@@ -6,6 +6,7 @@ import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Produces;
+import io.micronaut.http.annotation.PathVariable;
 
 import java.util.List;
 
@@ -22,5 +23,11 @@ public class SchemaController {
     @Produces(MediaType.APPLICATION_JSON)
     public List<SchemaInfo> listSchemas() {
         return schemaService.listSchemas();
+    }
+
+    @Get("/{schema-id}")
+    @Produces("text/csv-schema")
+    public String getSchema(@PathVariable("schema-id") String schemaId) throws Exception {
+        return schemaService.getSchema(schemaId);
     }
 }
