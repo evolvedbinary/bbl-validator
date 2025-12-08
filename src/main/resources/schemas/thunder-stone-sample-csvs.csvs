@@ -1,0 +1,13 @@
+database /tmp/testdb
+table  customer
+# indicate csv format with a delimiter of |
+csv |
+#       Name            Type            Tag
+field   CustID          varchar(10)     1
+field   Company         varchar(80)     2
+field   Address         varchar(80)     3
+field   City            varchar(20)     4
+field   State           varchar(10)     5
+field   Zip             varchar(10)     6
+field   Country         varchar(10)     7
+field   Phone           varchar(20)     8
