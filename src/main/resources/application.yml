@@ -1,5 +1,7 @@
 micronaut:
   application:
-    name: micronaut-mvp
+    name: bbl-validator
   server:
     port: 8080
+api:
+  version: 1.0.0
