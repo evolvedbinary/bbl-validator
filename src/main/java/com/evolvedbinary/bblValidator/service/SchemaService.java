@@ -14,7 +14,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 @Singleton
@@ -24,6 +26,7 @@ public class SchemaService {
     private static final String SCHEMA_DIRECTORY = "schemas";
 
     private final List<SchemaInfo> schemas = new ArrayList<>();
+    private final Map<String, String> schemaContents = new HashMap<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @PostConstruct
@@ -78,6 +81,8 @@ public class SchemaService {
             Path schemaFilePath = metadataPath.getParent().resolve(schemaFileName);
 
             if (Files.exists(schemaFilePath)) {
+                String schemaContent = Files.readString(schemaFilePath, StandardCharsets.UTF_8);
+                schemaContents.put(schemaInfo.getId(), schemaContent);
                 schemas.add(schemaInfo);
                 LOG.debug("Loaded schema: {}", schemaInfo.getId());
             } else {
@@ -90,6 +95,16 @@ public class SchemaService {
 
     public List<SchemaInfo> listSchemas() {
         return new ArrayList<>(schemas);
+    }
+
+    public String getSchema(String schemaId) throws Exception {
+        String content = schemaContents.get(schemaId);
+
+        if (content == null) {
+            throw new Exception("Schema not found: " + schemaId);
+        }
+
+        return content;
     }
 }
 
