@@ -53,6 +53,13 @@
             <version>${micronaut.validation.version}</version>
         </dependency>
 
+        <!-- Micronaut Serde API - Required for @Serdeable annotation -->
+        <dependency>
+            <groupId>io.micronaut.serde</groupId>
+            <artifactId>micronaut-serde-api</artifactId>
+            <version>2.16.2</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/io.micronaut.serde/micronaut-serde-jackson -->
         <dependency>
             <groupId>io.micronaut.serde</groupId>
@@ -61,11 +68,26 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- Integration between Micronaut and Reactor for request middleware -->
+        <dependency>
+            <groupId>io.micronaut.reactor</groupId>
+            <artifactId>micronaut-reactor</artifactId>
+            <version>3.9.1</version>
+        </dependency>
+
         <!-- Logback for logging -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.5.21</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- SnakeYAML for YAML configuration support -->
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>2.0</version>
             <scope>runtime</scope>
         </dependency>
     </dependencies>
