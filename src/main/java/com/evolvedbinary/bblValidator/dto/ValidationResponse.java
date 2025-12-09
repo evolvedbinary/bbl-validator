@@ -2,39 +2,27 @@ package com.evolvedbinary.bblValidator.dto;
 
 import io.micronaut.serde.annotation.Serdeable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Serdeable
 public class ValidationResponse {
 
-    private String schemaId;
-    private String url;
     private boolean valid;
-    private String source;
+    private List<ValidationError> errors;
+    private long executionTimeMs;
 
     public ValidationResponse() {
+        this.errors = new ArrayList<>();
     }
 
-    public ValidationResponse(String schemaId, String url, boolean valid, String source) {
-        this.schemaId = schemaId;
-        this.url = url;
+    public ValidationResponse(boolean valid,
+                            List<ValidationError> errors, long executionTimeMs) {
+        this.executionTimeMs = executionTimeMs;
         this.valid = valid;
-        this.source = source;
+        this.errors = errors != null ? errors : new ArrayList<>();
     }
 
-    public String getSchemaId() {
-        return schemaId;
-    }
-
-    public void setSchemaId(String schemaId) {
-        this.schemaId = schemaId;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
 
     public boolean isValid() {
         return valid;
@@ -44,11 +32,19 @@ public class ValidationResponse {
         this.valid = valid;
     }
 
-    public String getSource() {
-        return source;
+    public List<ValidationError> getErrors() {
+        return errors;
     }
 
-    public void setSource(String source) {
-        this.source = source;
+    public void setErrors(List<ValidationError> errors) {
+        this.errors = errors;
+    }
+
+    public long getExecutionTimeMs() {
+        return executionTimeMs;
+    }
+
+    public void setExecutionTimeMs(long executionTimeMs) {
+        this.executionTimeMs = executionTimeMs;
     }
 }

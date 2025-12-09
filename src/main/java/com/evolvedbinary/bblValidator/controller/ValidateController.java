@@ -1,7 +1,9 @@
 package com.evolvedbinary.bblValidator.controller;
 
+import com.evolvedbinary.bblValidator.dto.ValidationError;
 import com.evolvedbinary.bblValidator.dto.ValidationForm;
 import com.evolvedbinary.bblValidator.dto.ValidationResponse;
+import com.evolvedbinary.bblValidator.service.CsvValidationService;
 import com.evolvedbinary.bblValidator.service.FileDownloadService;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Body;
@@ -15,16 +17,16 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 
-/**
- * Controller for handling validation requests.
- */
 @Controller("/validate")
 public class ValidateController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ValidateController.class);
     @Inject
     FileDownloadService fileDownloadService;
+    @Inject
+    CsvValidationService csvValidationService;
 
     /**
      * Handles form URL encoded validation requests.
@@ -38,11 +40,10 @@ public class ValidateController {
         try {
             Path downloadedFile = fileDownloadService.downloadToTemp(form.url());
             LOG.info("File downloaded to: {}", downloadedFile);
-            // TODO: Perform validation with downloadedFile
-            return new ValidationResponse(form.schemaId(), form.url(), true, "form handler");
+            return performValidation(downloadedFile, form.schemaId());
         } catch (IOException e) {
             LOG.error("Failed to download file from URL: {}", form.url(), e);
-            return new ValidationResponse(form.schemaId(), form.url(), false, "Download failed: " + e.getMessage());
+            return createErrorResponse("Download failed: " + e.getMessage(), 0);
         }
     }
 
@@ -55,16 +56,15 @@ public class ValidateController {
      */
     @Post
     @Consumes(MediaType.TEXT_CSV)
-    public ValidationResponse validateCsv(@QueryValue("schema-id") String schemaId, 
+    public ValidationResponse validateCsv(@QueryValue("schema-id") String schemaId,
                                           @Body String csvContent) {
         try {
             Path tempFile = fileDownloadService.saveContentToTemp(csvContent, "uploaded-content.csv");
             LOG.info("CSV content saved to: {}", tempFile);
-            // TODO: Perform validation with tempFile
-            return new ValidationResponse(schemaId, "CSV content", true, "text handler");
+            return performValidation(tempFile, schemaId);
         } catch (IOException e) {
             LOG.error("Failed to save CSV content to temp file", e);
-            return new ValidationResponse(schemaId, "CSV content", false, "Failed to save content: " + e.getMessage());
+            return createErrorResponse("Failed to save content: " + e.getMessage(), 0);
         }
     }
 
@@ -76,17 +76,32 @@ public class ValidateController {
      * @return validation response
      */
     @Post
-    @Consumes(MediaType.ALL) 
-    public ValidationResponse validateParams(@QueryValue("schema-id") String schemaId, 
+    @Consumes(MediaType.ALL)
+    public ValidationResponse validateParams(@QueryValue("schema-id") String schemaId,
                                              @QueryValue String url) {
         try {
             Path downloadedFile = fileDownloadService.downloadToTemp(url);
             LOG.info("File downloaded to: {}", downloadedFile);
-            // TODO: Perform validation with downloadedFile
-            return new ValidationResponse(schemaId, url, true, "query handler");
+            return performValidation(downloadedFile, schemaId);
         } catch (IOException e) {
             LOG.error("Failed to download file from URL: {}", url, e);
-            return new ValidationResponse(schemaId, url, false, "Download failed: " + e.getMessage());
+            return createErrorResponse("Download failed: " + e.getMessage(), 0);
         }
+    }
+
+    private ValidationResponse performValidation(Path csvFile, String schemaId) {
+        CsvValidationService.ValidationResult result = csvValidationService.validateCsvFile(csvFile, schemaId);
+
+        if (result.hasErrorMessage()) {
+            return createErrorResponse(result.getErrorMessage(), result.getExecutionTimeMs());
+        }
+
+        return new ValidationResponse(result.isValid(), result.getErrors(), result.getExecutionTimeMs());
+    }
+
+    private ValidationResponse createErrorResponse(String errorMessage, long executionTimeMs) {
+        return new ValidationResponse(false,
+            List.of(new ValidationError(errorMessage, 0, 0)),
+            executionTimeMs);
     }
 }

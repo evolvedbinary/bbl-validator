@@ -28,6 +28,7 @@ public class SchemaService {
 
     private final List<SchemaInfo> schemas = new ArrayList<>();
     private final Map<String, String> schemaContents = new HashMap<>();
+    private final Map<String, Path> schemaFilePaths = new HashMap<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @PostConstruct
@@ -90,6 +91,7 @@ public class SchemaService {
             if (Files.exists(schemaFilePath)) {
                 String schemaContent = Files.readString(schemaFilePath, StandardCharsets.UTF_8);
                 schemaContents.put(schemaInfo.getId(), schemaContent);
+                schemaFilePaths.put(schemaInfo.getId(), schemaFilePath);
                 schemas.add(schemaInfo);
                 LOG.debug("Loaded schema: {}", schemaInfo.getId());
             } else {
@@ -112,6 +114,16 @@ public class SchemaService {
         }
 
         return content;
+    }
+
+    public Path getSchemaFilePath(String schemaId) throws Exception {
+        Path filePath = schemaFilePaths.get(schemaId);
+
+        if (filePath == null) {
+            throw new Exception("Schema file path not found: " + schemaId);
+        }
+
+        return filePath;
     }
 }
 
