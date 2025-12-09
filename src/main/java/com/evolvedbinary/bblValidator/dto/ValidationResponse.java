@@ -48,7 +48,7 @@ public class ValidationResponse {
         return source;
     }
 
-    public void setSource(String url) {
+    public void setSource(String source) {
         this.source = source;
     }
 }

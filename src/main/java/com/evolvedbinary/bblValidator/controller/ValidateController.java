@@ -9,6 +9,7 @@ import io.micronaut.http.annotation.Consumes;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.http.annotation.QueryValue;
+import jakarta.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,16 +23,8 @@ import java.nio.file.Path;
 public class ValidateController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ValidateController.class);
-    private final FileDownloadService fileDownloadService;
-
-    /**
-     * Constructor for ValidateController.
-     *
-     * @param fileDownloadService service for downloading files
-     */
-    public ValidateController(FileDownloadService fileDownloadService) {
-        this.fileDownloadService = fileDownloadService;
-    }
+    @Inject
+    FileDownloadService fileDownloadService;
 
     /**
      * Handles form URL encoded validation requests.

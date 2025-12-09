@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+// TODO talk to Adam about syncronaztion
 @Singleton
 public class SchemaService {
 
@@ -53,6 +54,12 @@ public class SchemaService {
     }
 
     private void loadSchemasFromClasspath() {
+        // close the file input stream
+        // try with resoucres
+        // avoid class path
+        // in application yaml add a property for schema folder
+        // make it relative to the start up location
+        // if it starts with a slash then resolve it as absolut path
         try {
             // Get resource URL and list files
             ClassLoader classLoader = getClass().getClassLoader();

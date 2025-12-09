@@ -10,11 +10,8 @@ import io.micronaut.http.annotation.Produces;
 @Controller
 public class VersionController {
 
-    private final String version;
-
-    public VersionController(@Value("${api.version}") String version) {
-        this.version = version;
-    }
+    @Value("${api.version}")
+    String version;
 
     @Get("/version")
     @Produces(MediaType.APPLICATION_JSON)
