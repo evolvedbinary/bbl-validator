@@ -5,3 +5,5 @@ micronaut:
     port: 8080
 api:
   version: ${project.version}
+schema:
+  directory: schemas
