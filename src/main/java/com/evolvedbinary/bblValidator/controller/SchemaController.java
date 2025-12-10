@@ -7,17 +7,15 @@ import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Produces;
 import io.micronaut.http.annotation.PathVariable;
+import jakarta.inject.Inject;
 
 import java.util.List;
 
 @Controller("/schema")
 public class SchemaController {
 
-    private final SchemaService schemaService;
-
-    public SchemaController(SchemaService schemaService) {
-        this.schemaService = schemaService;
-    }
+    @Inject
+    SchemaService schemaService;
 
     @Get
     @Produces(MediaType.APPLICATION_JSON)
