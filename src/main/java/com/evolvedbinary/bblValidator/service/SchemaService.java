@@ -64,12 +64,14 @@ public class SchemaService {
      * Otherwise, it's resolved relative to the current working directory (startup location).
      */
     private Path resolveSchemaPath() {
-        if (schemaDirectory.startsWith("/")) {
+        Path schemaPath =  Paths.get(schemaDirectory);
+        if (schemaPath.isAbsolute()) {
             // Absolute path
-            return Paths.get(schemaDirectory);
+            return schemaPath;
         } else {
-            // Relative to current working directory
-            return Paths.get(System.getProperty("user.dir"), schemaDirectory);
+            // Relative to current working
+            Path applicationDir = Paths.get(System.getProperty("user.dir"));
+            return schemaPath.relativize(applicationDir);
         }
     }
 
@@ -109,27 +111,15 @@ public class SchemaService {
     }
 
     public List<SchemaInfo> listSchemas() {
-        return new ArrayList<>(schemas);
+        return schemas;
     }
 
-    public String getSchema(String schemaId) throws Exception {
-        String content = schemaContents.get(schemaId);
-
-        if (content == null) {
-            throw new Exception("Schema not found: " + schemaId);
-        }
-
-        return content;
+    public String getSchema(String schemaId) {
+        return schemaContents.get(schemaId);
     }
 
-    public Path getSchemaFilePath(String schemaId) throws Exception {
-        Path filePath = schemaFilePaths.get(schemaId);
-
-        if (filePath == null) {
-            throw new Exception("Schema file path not found: " + schemaId);
-        }
-
-        return filePath;
+    public Path getSchemaFilePath(String schemaId) {
+        return schemaFilePaths.get(schemaId);
     }
 }
 
