@@ -71,7 +71,7 @@ public class SchemaService {
         } else {
             // Relative to current working
             Path applicationDir = Paths.get(System.getProperty("user.dir"));
-            return schemaPath.relativize(applicationDir);
+            return applicationDir.resolve(schemaPath);
         }
     }
 
