@@ -1,5 +1,6 @@
 package com.evolvedbinary.bblValidator.service;
 
+import com.fasterxml.uuid.Generators;
 import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,34 +14,45 @@ import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.UUID;
 
 @Singleton
 public class FileDownloadService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FileDownloadService.class);
-    private static final String TEMP_DIR_PREFIX = "bbl-validator-";
-    private static final String DEFAULT_FILENAME = "downloaded-file.csv";
+    private static final String TEMP_DIR_NAME = "bbl-validator";
     private final HttpClient httpClient;
+    private final Path sharedTempDir;
 
     public FileDownloadService() {
         this.httpClient = HttpClient.newBuilder()
                 .followRedirects(HttpClient.Redirect.NORMAL)
                 .build();
+        try {
+            Path systemTempDir = Path.of(System.getProperty("java.io.tmpdir"));
+            this.sharedTempDir = systemTempDir.resolve(TEMP_DIR_NAME);
+            if (!Files.exists(sharedTempDir)) {
+                Files.createDirectories(sharedTempDir);
+                LOG.info("Created persistent temp directory: {}", sharedTempDir);
+            } else {
+                LOG.info("Using existing persistent temp directory: {}", sharedTempDir);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to create or access persistent temp directory", e);
+        }
     }
 
     /**
-     * Downloads a file from the given URL and stores it in a temporary directory.
+     * Downloads a file from the given URL and stores it with a UUID v4 filename.
      *
      * @param url The URL to download from
-     * @return Path to the downloaded file in the temp directory
+     * @return Path to the downloaded file in the shared temp directory
      * @throws IOException if download or file operations fail
-     * @throws IllegalArgumentException if url is null or empty
      */
     public Path downloadToTemp(String url) throws IOException {        
         try {
-            Path tempDir = createTempDirectory();
-            String filename = extractFilename(url);
-            Path tempFile = tempDir.resolve(filename);
+            String filename = generateUuidFilename();
+            Path tempFile = sharedTempDir.resolve(filename);
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
@@ -66,17 +78,15 @@ public class FileDownloadService {
     }
 
     /**
-     * Saves content to a temporary file.
+     * Saves content to a temporary file with a UUID v4 filename.
      *
      * @param content The content to save
-     * @param filename The filename to use
      * @return Path to the created temp file
      * @throws IOException if file operations fail
-     * @throws IllegalArgumentException if content or filename is null or empty
      */
-    public Path saveContentToTemp(String content, String filename) throws IOException {        
-        Path tempDir = createTempDirectory();
-        Path tempFile = tempDir.resolve(filename);
+    public Path saveContentToTemp(String content) throws IOException {
+        String uuidFilename = generateUuidFilename();
+        Path tempFile = sharedTempDir.resolve(uuidFilename);
 
         Files.writeString(tempFile, content);
 
@@ -85,40 +95,12 @@ public class FileDownloadService {
     }
 
     /**
-     * Creates a temporary directory with the standard prefix.
+     * Generates a UUID v4 filename.
      *
-     * @return Path to the created temp directory
-     * @throws IOException if directory creation fails
+     * @return A UUID v4 string to be used as filename
      */
-    private Path createTempDirectory() throws IOException {
-        return Files.createTempDirectory(TEMP_DIR_PREFIX);
-    }
-
-    
-    /**
-     * Extracts filename from URL or returns a default name.
-     *
-     * @param url The URL to extract filename from
-     * @return The extracted filename or default filename
-     */
-    private String extractFilename(String url) {
-        try {
-            String path = URI.create(url).getPath();
-            if (path == null || path.isEmpty()) {
-                return DEFAULT_FILENAME;
-            }
-            
-            int lastSlash = path.lastIndexOf('/');
-            if (lastSlash >= 0 && lastSlash < path.length() - 1) {
-                String filename = path.substring(lastSlash + 1);
-                // Ensure filename is not empty after extraction
-                if (!filename.trim().isEmpty()) {
-                    return filename;
-                }
-            }
-        } catch (Exception e) {
-            LOG.warn("Could not extract filename from URL: {}", url, e);
-        }
-        return DEFAULT_FILENAME;
+    private String generateUuidFilename() {
+        UUID uuid = Generators.randomBasedGenerator().generate();
+        return uuid.toString();
     }
 }

@@ -59,7 +59,7 @@ public class ValidateController {
     public ValidationResponse validateCsv(@QueryValue("schema-id") String schemaId,
                                           @Body String csvContent) {
         try {
-            Path tempFile = fileDownloadService.saveContentToTemp(csvContent, "uploaded-content.csv");
+            Path tempFile = fileDownloadService.saveContentToTemp(csvContent);
             LOG.info("CSV content saved to: {}", tempFile);
             return performValidation(tempFile, schemaId);
         } catch (IOException e) {
