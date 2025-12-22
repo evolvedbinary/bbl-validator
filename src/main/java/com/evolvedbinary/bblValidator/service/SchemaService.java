@@ -40,19 +40,22 @@ public class SchemaService {
             Path schemaPath = resolveSchemaPath();
 
             if (!Files.exists(schemaPath)) {
-                LOG.warn("Schemas directory not found: {}", schemaPath);
+                // this should be an error, and we need to crash the app
+                // there's no log.fatal ????
+                LOG.error("Schemas directory not found: {}", schemaPath);
                 return;
             }
 
             if (!Files.isDirectory(schemaPath)) {
-                LOG.warn("Schema path is not a directory: {}", schemaPath);
+                // this should be an error, and we need to crash the app
+                LOG.error("Schema path is not a directory: {}", schemaPath);
                 return;
             }
 
             // Scan for schema metadata files
             loadSchemasFromFileSystem(schemaPath);
 
-            LOG.info("Loaded {} schemas from: {}", schemas.size(), schemaPath);
+            LOG.debug("Loaded {} schemas from: {}", schemas.size(), schemaPath);
         } catch (Exception e) {
             LOG.error("Error loading schemas from file system", e);
         }

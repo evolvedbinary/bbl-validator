@@ -1,6 +1,7 @@
 package com.evolvedbinary.bblValidator.service;
 
 import com.fasterxml.uuid.Generators;
+import com.fasterxml.uuid.impl.RandomBasedGenerator;
 import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,20 +24,15 @@ public class FileDownloadService {
     private static final String TEMP_DIR_NAME = "bbl-validator";
     private final HttpClient httpClient;
     private final Path sharedTempDir;
+    private final RandomBasedGenerator generator = Generators.randomBasedGenerator();
 
     public FileDownloadService() {
         this.httpClient = HttpClient.newBuilder()
                 .followRedirects(HttpClient.Redirect.NORMAL)
                 .build();
         try {
-            Path systemTempDir = Path.of(System.getProperty("java.io.tmpdir"));
-            this.sharedTempDir = systemTempDir.resolve(TEMP_DIR_NAME);
-            if (!Files.exists(sharedTempDir)) {
-                Files.createDirectories(sharedTempDir);
-                LOG.info("Created persistent temp directory: {}", sharedTempDir);
-            } else {
-                LOG.info("Using existing persistent temp directory: {}", sharedTempDir);
-            }
+            //TODO: save the name for clean up
+            this.sharedTempDir = Files.createTempDirectory(TEMP_DIR_NAME);
         } catch (IOException e) {
             throw new RuntimeException("Failed to create or access persistent temp directory", e);
         }
@@ -68,9 +64,11 @@ public class FileDownloadService {
                 Files.copy(inputStream, tempFile, StandardCopyOption.REPLACE_EXISTING);
             }
 
-            LOG.info("Downloaded file from {} to {}", url, tempFile);
+            LOG.debug("Downloaded file from {} to {}", url, tempFile);
             return tempFile;
 
+        } catch (IllegalArgumentException e) {
+            throw new IOException("Invalid URL format: " + url, e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new IOException("Download interrupted for URL: " + url, e);
@@ -90,7 +88,7 @@ public class FileDownloadService {
 
         Files.writeString(tempFile, content);
 
-        LOG.info("Saved content to temp file: {}", tempFile);
+        LOG.debug("Saved content to temp file: {}", tempFile);
         return tempFile;
     }
 
@@ -100,7 +98,7 @@ public class FileDownloadService {
      * @return A UUID v4 string to be used as filename
      */
     private String generateUuidFilename() {
-        UUID uuid = Generators.randomBasedGenerator().generate();
-        return uuid.toString();
+        UUID uuid = generator.generate();
+        return uuid.toString() + ".csv";
     }
 }

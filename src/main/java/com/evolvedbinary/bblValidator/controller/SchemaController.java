@@ -1,7 +1,9 @@
 package com.evolvedbinary.bblValidator.controller;
 
+import com.evolvedbinary.bblValidator.dto.ErrorResponse;
 import com.evolvedbinary.bblValidator.dto.SchemaInfo;
 import com.evolvedbinary.bblValidator.service.SchemaService;
+import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
@@ -25,7 +27,14 @@ public class SchemaController {
 
     @Get("/{schema-id}")
     @Produces("text/csv-schema")
-    public String getSchema(@PathVariable("schema-id") String schemaId) throws Exception {
-        return schemaService.getSchema(schemaId);
+    public HttpResponse<Object> getSchema(@PathVariable("schema-id") String schemaId) {
+        String schema = schemaService.getSchema(schemaId);
+        if (schema == null) {
+            return HttpResponse
+                    .badRequest()
+                    .contentType(MediaType.APPLICATION_JSON_TYPE)
+                    .body(new ErrorResponse(ErrorResponse.Code.SCHEMA_NOT_FOUND,"Schema not found with ID: " + schemaId));
+        }
+        return HttpResponse.ok(schema);
     }
 }

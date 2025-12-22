@@ -71,5 +71,17 @@ public class SchemaInfo {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (!(o instanceof SchemaInfo that)) return false;
+
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }
 

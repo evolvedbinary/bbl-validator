@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Serdeable
-public class ValidationResponse {
+public final class ValidationResponse implements ResponseObject {
 
     private boolean valid;
     private List<ValidationError> errors;

@@ -14,9 +14,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static uk.gov.nationalarchives.csv.validator.api.CsvValidator$.MODULE$;
-
-
 @Singleton
 public class CsvValidationService {
 
@@ -51,7 +48,7 @@ public class CsvValidationService {
 
     private ValidationResult processValidationMessages(List<FailMessage> messages, long executionTimeMs) {
         if (messages.isEmpty()) {
-            LOG.info("CSV validation successful - no errors ({}ms)", executionTimeMs);
+            LOG.debug("CSV validation successful - no errors ({}ms)", executionTimeMs);
             return ValidationResult.success(executionTimeMs);
         }
 
@@ -64,11 +61,11 @@ public class CsvValidationService {
                 message.getColumnIndex() + 1  // Add 1 for user display
             );
             errors.add(error);
-            LOG.info("Validation error at line {}, column {}: {}", 
+            LOG.debug("Validation error at line {}, column {}: {}", 
                      message.getLineNumber(), message.getColumnIndex(), message.getMessage());
         }
 
-        LOG.info("CSV validation completed - Valid: false, Errors: {} ({}ms)", errors.size(), executionTimeMs);
+        LOG.debug("CSV validation completed - Valid: false, Errors: {} ({}ms)", errors.size(), executionTimeMs);
         return new ValidationResult(false, errors, executionTimeMs);
     }
 
