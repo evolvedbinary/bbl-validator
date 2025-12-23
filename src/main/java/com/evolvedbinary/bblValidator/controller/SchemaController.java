@@ -27,14 +27,17 @@ public class SchemaController {
 
     @Get("/{schema-id}")
     @Produces("text/csv-schema")
-    public HttpResponse<Object> getSchema(@PathVariable("schema-id") String schemaId) {
-        String schema = schemaService.getSchema(schemaId);
+    public HttpResponse<Object> getSchema(@PathVariable("schema-id") final String schemaId) {
+        final String schema = schemaService.getSchema(schemaId);
         if (schema == null) {
             return HttpResponse
                     .badRequest()
                     .contentType(MediaType.APPLICATION_JSON_TYPE)
                     .body(new ErrorResponse(ErrorResponse.Code.SCHEMA_NOT_FOUND,"Schema not found with ID: " + schemaId));
         }
-        return HttpResponse.ok(schema);
+        return HttpResponse
+                .ok()
+                .contentType(MediaType.of("text/csv-schema"))
+                .body(schema);
     }
 }
