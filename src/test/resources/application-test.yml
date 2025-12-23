@@ -8,5 +8,4 @@ micronaut:
 api:
   version: ${project.version}
 schema:
-  #I didn't manage to set a new property in the build, was I supposed to get the value in the test resources filtering?
-  directory: ${test.schemas.dir}
+  directory: ${project.build.testOutputDirectory}/schemas
