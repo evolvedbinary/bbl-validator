@@ -64,7 +64,7 @@ public class FileDownloadService {
                 Files.copy(inputStream, tempFile, StandardCopyOption.REPLACE_EXISTING);
             }
 
-            LOG.debug("Downloaded file from {} to {}", url, tempFile);
+            LOG.trace("Downloaded file from {} to {}", url, tempFile);
             return tempFile;
 
         } catch (final IllegalArgumentException e) {
@@ -88,7 +88,7 @@ public class FileDownloadService {
 
         Files.writeString(tempFile, content);
 
-        LOG.debug("Saved content to temp file: {}", tempFile);
+        LOG.trace("Saved content to temp file: {}", tempFile);
         return tempFile;
     }
 

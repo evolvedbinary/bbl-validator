@@ -44,10 +44,10 @@ public class ValidateController {
         }
         try {
             final Path downloadedFile = fileDownloadService.downloadToTemp(form.url());
-            LOG.debug("File downloaded to: {}", downloadedFile);
+            LOG.trace("File downloaded to: {}", downloadedFile);
             return HttpResponse.ok(performValidation(downloadedFile, form.schemaId()));
         } catch (final IOException e) {
-            LOG.debug("Failed to download file from URL: {}", form.url());
+            LOG.trace("Failed to download file from URL: {}", form.url());
             return HttpResponse.badRequest().body(new ErrorResponse(ErrorResponse.Code.NONE_RESOLVABLE_URL,"Unable to resolve url : " + form.url()));
         }
     }
@@ -71,7 +71,7 @@ public class ValidateController {
         }
         try {
             final Path tempFile = fileDownloadService.saveContentToTemp(csvContent);
-            LOG.debug("CSV content saved to: {}", tempFile);
+            LOG.trace("CSV content saved to: {}", tempFile);
             return HttpResponse.ok(performValidation(tempFile, schemaId));
         } catch (final IOException e) {
             // TODO ASK Adam if this should be an error and wake someone from sleep
@@ -98,10 +98,11 @@ public class ValidateController {
         }
         try {
             final Path downloadedFile = fileDownloadService.downloadToTemp(url);
-            LOG.debug("File downloaded to: {}", downloadedFile);
+            LOG.trace("File downloaded to: {}", downloadedFile);
             return HttpResponse.ok(performValidation(downloadedFile, schemaId));
+
         } catch (final IOException e) {
-            LOG.debug("Failed to download file from URL: {}", url);
+            LOG.trace("Failed to download file from URL: {}", url);
             return HttpResponse.badRequest().body(new ErrorResponse(ErrorResponse.Code.NONE_RESOLVABLE_URL,"Unable to resolve url : " + url));
         }
     }

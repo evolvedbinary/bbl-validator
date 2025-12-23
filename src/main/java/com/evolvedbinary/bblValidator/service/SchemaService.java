@@ -42,6 +42,7 @@ public class SchemaService {
             if (!Files.exists(schemaPath)) {
                 // this should be an error, and we need to crash the app
                 // there's no log.fatal ????
+                // TODO talk to Adam about this
                 LOG.error("Schemas directory not found: {}", schemaPath);
                 return;
             }
@@ -55,7 +56,7 @@ public class SchemaService {
             // Scan for schema metadata files
             loadSchemasFromFileSystem(schemaPath);
 
-            LOG.debug("Loaded {} schemas from: {}", schemas.size(), schemaPath);
+            LOG.trace("Loaded {} schemas from: {}", schemas.size(), schemaPath);
         } catch (Exception e) {
             LOG.error("Error loading schemas from file system", e);
         }
@@ -107,7 +108,7 @@ public class SchemaService {
             schemaContents.put(schemaInfo.getId(), schemaContent);
             schemaFilePaths.put(schemaInfo.getId(), schemaFilePath);
             schemas.add(schemaInfo);
-            LOG.debug("Loaded schema: {}", schemaInfo.getId());
+            LOG.trace("Loaded schema: {}", schemaInfo.getId());
         } else {
             LOG.warn("Schema file not found for metadata: {}", schemaFileName);
         }

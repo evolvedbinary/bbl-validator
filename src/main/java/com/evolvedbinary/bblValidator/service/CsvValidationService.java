@@ -48,7 +48,7 @@ public class CsvValidationService {
 
     private ValidationResult processValidationMessages(final List<FailMessage> messages, final long executionTimeMs) {
         if (messages.isEmpty()) {
-            LOG.debug("CSV validation successful - no errors ({}ms)", executionTimeMs);
+            LOG.trace("CSV validation successful - no errors ({}ms)", executionTimeMs);
             return ValidationResult.success(executionTimeMs);
         }
 
@@ -61,11 +61,11 @@ public class CsvValidationService {
                 message.getColumnIndex() + 1  // Add 1 for user display
             );
             errors.add(error);
-            LOG.debug("Validation error at line {}, column {}: {}", 
+            LOG.trace("Validation error at line {}, column {}: {}", 
                      message.getLineNumber(), message.getColumnIndex(), message.getMessage());
         }
 
-        LOG.debug("CSV validation completed - Valid: false, Errors: {} ({}ms)", errors.size(), executionTimeMs);
+        LOG.trace("CSV validation completed - Valid: false, Errors: {} ({}ms)", errors.size(), executionTimeMs);
         return new ValidationResult(false, errors, executionTimeMs);
     }
 
