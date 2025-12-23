@@ -16,8 +16,9 @@ public final class ValidationResponse implements ResponseObject {
         this.errors = new ArrayList<>();
     }
 
-    public ValidationResponse(boolean valid,
-                            List<ValidationError> errors, long executionTimeMs) {
+    public ValidationResponse(final boolean valid,
+                              final List<ValidationError> errors,
+                              final long executionTimeMs) {
         this.executionTimeMs = executionTimeMs;
         this.valid = valid;
         this.errors = errors != null ? errors : new ArrayList<>();
@@ -28,7 +29,7 @@ public final class ValidationResponse implements ResponseObject {
         return valid;
     }
 
-    public void setValid(boolean valid) {
+    public void setValid(final boolean valid) {
         this.valid = valid;
     }
 
@@ -36,7 +37,7 @@ public final class ValidationResponse implements ResponseObject {
         return errors;
     }
 
-    public void setErrors(List<ValidationError> errors) {
+    public void setErrors(final List<ValidationError> errors) {
         this.errors = errors;
     }
 
@@ -44,7 +45,7 @@ public final class ValidationResponse implements ResponseObject {
         return executionTimeMs;
     }
 
-    public void setExecutionTimeMs(long executionTimeMs) {
+    public void setExecutionTimeMs(final long executionTimeMs) {
         this.executionTimeMs = executionTimeMs;
     }
 }

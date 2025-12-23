@@ -15,7 +15,7 @@ public class SchemaInfo {
     public SchemaInfo() {
     }
 
-    public SchemaInfo(String id, String name, String version, String date, String url, String description) {
+    public SchemaInfo(final String id, final String name, final String version, final String date, final String url, final String description) {
         this.id = id;
         this.name = name;
         this.version = version;
@@ -28,7 +28,7 @@ public class SchemaInfo {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(final String id) {
         this.id = id;
     }
 
@@ -36,7 +36,7 @@ public class SchemaInfo {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -44,7 +44,7 @@ public class SchemaInfo {
         return version;
     }
 
-    public void setVersion(String version) {
+    public void setVersion(final String version) {
         this.version = version;
     }
 
@@ -52,7 +52,7 @@ public class SchemaInfo {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(final String date) {
         this.date = date;
     }
 
@@ -60,7 +60,7 @@ public class SchemaInfo {
         return url;
     }
 
-    public void setUrl(String url) {
+    public void setUrl(final String url) {
         this.url = url;
     }
 
@@ -68,13 +68,15 @@ public class SchemaInfo {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
     @Override
     public final boolean equals(Object o) {
-        if (!(o instanceof SchemaInfo that)) return false;
+        if (!(o instanceof SchemaInfo that)) {
+            return false;
+        }
 
         return id.equals(that.id);
     }

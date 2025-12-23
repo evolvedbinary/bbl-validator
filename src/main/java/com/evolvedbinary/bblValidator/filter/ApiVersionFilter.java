@@ -16,7 +16,7 @@ public class ApiVersionFilter implements HttpServerFilter {
     private String version;
 
     @Override
-    public Publisher<MutableHttpResponse<?>> doFilter(HttpRequest<?> request, ServerFilterChain chain) {
+    public Publisher<MutableHttpResponse<?>> doFilter(final HttpRequest<?> request, final ServerFilterChain chain) {
         return Flux.from(chain.proceed(request))
                 .doOnNext(response -> response.header("X-BBLVALIDATOR-VERSION", version));
     }

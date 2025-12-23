@@ -38,15 +38,15 @@ public class ValidateController {
      */
     @Post
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public HttpResponse<ResponseObject> validateForm(@Body ValidationForm form) {
+    public HttpResponse<ResponseObject> validateForm(@Body final ValidationForm form) {
         if(null == schemaService.getSchema(form.schemaId())) {
             return HttpResponse.badRequest().body(new ErrorResponse(ErrorResponse.Code.SCHEMA_NOT_FOUND,"Schema not found with ID: " + form.schemaId()));
         }
         try {
-            Path downloadedFile = fileDownloadService.downloadToTemp(form.url());
+            final Path downloadedFile = fileDownloadService.downloadToTemp(form.url());
             LOG.debug("File downloaded to: {}", downloadedFile);
             return HttpResponse.ok(performValidation(downloadedFile, form.schemaId()));
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOG.debug("Failed to download file from URL: {}", form.url());
             return HttpResponse.badRequest().body(new ErrorResponse(ErrorResponse.Code.NONE_RESOLVABLE_URL,"Unable to resolve url : " + form.url()));
         }
@@ -61,8 +61,8 @@ public class ValidateController {
      */
     @Post
     @Consumes(MediaType.TEXT_CSV)
-    public HttpResponse<ResponseObject> validateCsv(@QueryValue("schema-id") String schemaId,
-                                                    @Nullable @Body String csvContent) {
+    public HttpResponse<ResponseObject> validateCsv(@QueryValue("schema-id") final String schemaId,
+                                                    @Nullable @Body final String csvContent) {
         if(schemaService.getSchema(schemaId) == null) {
             return HttpResponse.badRequest().body(new ErrorResponse(ErrorResponse.Code.SCHEMA_NOT_FOUND,"Schema not found with ID: " + schemaId));
         }
@@ -70,10 +70,10 @@ public class ValidateController {
             return HttpResponse.badRequest().body(new ErrorResponse(ErrorResponse.Code.EMPTY_CSV,"Empty CSV content"));
         }
         try {
-            Path tempFile = fileDownloadService.saveContentToTemp(csvContent);
+            final Path tempFile = fileDownloadService.saveContentToTemp(csvContent);
             LOG.debug("CSV content saved to: {}", tempFile);
             return HttpResponse.ok(performValidation(tempFile, schemaId));
-        } catch (IOException e) {
+        } catch (final IOException e) {
             // TODO ASK Adam if this should be an error and wake someone from sleep
             LOG.error("Failed to save CSV content to temp file", e);
             // what's the issue here excalty??
@@ -91,23 +91,23 @@ public class ValidateController {
      */
     @Post
     @Consumes(MediaType.ALL)
-    public HttpResponse<ResponseObject> validateParams(@QueryValue("schema-id") String schemaId,
-                                                       @QueryValue String url) {
+    public HttpResponse<ResponseObject> validateParams(@QueryValue("schema-id") final String schemaId,
+                                                       @QueryValue final String url) {
         if(schemaService.getSchema(schemaId) == null) {
             return HttpResponse.badRequest().body(new ErrorResponse(ErrorResponse.Code.SCHEMA_NOT_FOUND,"Schema not found with ID: " + schemaId));
         }
         try {
-            Path downloadedFile = fileDownloadService.downloadToTemp(url);
+            final Path downloadedFile = fileDownloadService.downloadToTemp(url);
             LOG.debug("File downloaded to: {}", downloadedFile);
             return HttpResponse.ok(performValidation(downloadedFile, schemaId));
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOG.debug("Failed to download file from URL: {}", url);
             return HttpResponse.badRequest().body(new ErrorResponse(ErrorResponse.Code.NONE_RESOLVABLE_URL,"Unable to resolve url : " + url));
         }
     }
 
-    private ResponseObject performValidation(Path csvFile, String schemaId) {
-        CsvValidationService.ValidationResult result = csvValidationService.validateCsvFile(csvFile, schemaId);
+    private ResponseObject performValidation(final Path csvFile, final String schemaId) {
+        final CsvValidationService.ValidationResult result = csvValidationService.validateCsvFile(csvFile, schemaId);
 
         if (result.hasErrorMessage()) {
             return new ErrorResponse(ErrorResponse.Code.VALIDATION_ERROR,"An error occurred: " + result.getErrorMessage());

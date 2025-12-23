@@ -33,7 +33,7 @@ public class FileDownloadService {
         try {
             //TODO: save the name for clean up
             this.sharedTempDir = Files.createTempDirectory(TEMP_DIR_NAME);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException("Failed to create or access persistent temp directory", e);
         }
     }
@@ -45,17 +45,17 @@ public class FileDownloadService {
      * @return Path to the downloaded file in the shared temp directory
      * @throws IOException if download or file operations fail
      */
-    public Path downloadToTemp(String url) throws IOException {        
+    public Path downloadToTemp(final String url) throws IOException {
         try {
-            String filename = generateUuidFilename();
-            Path tempFile = sharedTempDir.resolve(filename);
+            final String filename = generateUuidFilename();
+            final Path tempFile = sharedTempDir.resolve(filename);
 
-            HttpRequest request = HttpRequest.newBuilder()
+            final HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
                     .GET()
                     .build();
 
-            HttpResponse<InputStream> response = httpClient.send(
+            final HttpResponse<InputStream> response = httpClient.send(
                     request,
                     HttpResponse.BodyHandlers.ofInputStream()
             );
@@ -67,9 +67,9 @@ public class FileDownloadService {
             LOG.debug("Downloaded file from {} to {}", url, tempFile);
             return tempFile;
 
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             throw new IOException("Invalid URL format: " + url, e);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new IOException("Download interrupted for URL: " + url, e);
         }
@@ -82,9 +82,9 @@ public class FileDownloadService {
      * @return Path to the created temp file
      * @throws IOException if file operations fail
      */
-    public Path saveContentToTemp(String content) throws IOException {
-        String uuidFilename = generateUuidFilename();
-        Path tempFile = sharedTempDir.resolve(uuidFilename);
+    public Path saveContentToTemp(final String content) throws IOException {
+        final String uuidFilename = generateUuidFilename();
+        final Path tempFile = sharedTempDir.resolve(uuidFilename);
 
         Files.writeString(tempFile, content);
 
@@ -98,7 +98,7 @@ public class FileDownloadService {
      * @return A UUID v4 string to be used as filename
      */
     private String generateUuidFilename() {
-        UUID uuid = generator.generate();
+        final UUID uuid = generator.generate();
         return uuid.toString() + ".csv";
     }
 }

@@ -12,7 +12,7 @@ public class ValidationError {
     public ValidationError() {
     }
 
-    public ValidationError(String message, int lineNumber, int columnIndex) {
+    public ValidationError(final String message, final int lineNumber, final int columnIndex) {
         this.message = message;
         this.lineNumber = lineNumber;
         this.columnIndex = columnIndex;
@@ -22,7 +22,7 @@ public class ValidationError {
         return message;
     }
 
-    public void setMessage(String message) {
+    public void setMessage(final String message) {
         this.message = message;
     }
 
@@ -30,7 +30,7 @@ public class ValidationError {
         return lineNumber;
     }
 
-    public void setLineNumber(int lineNumber) {
+    public void setLineNumber(final int lineNumber) {
         this.lineNumber = lineNumber;
     }
 
@@ -38,7 +38,7 @@ public class ValidationError {
         return columnIndex;
     }
 
-    public void setColumnIndex(int columnIndex) {
+    public void setColumnIndex(final int columnIndex) {
         this.columnIndex = columnIndex;
     }
 }

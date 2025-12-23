@@ -37,7 +37,7 @@ public class SchemaService {
     public void loadSchemas() {
         try {
             // Resolve schema directory path
-            Path schemaPath = resolveSchemaPath();
+            final Path schemaPath = resolveSchemaPath();
 
             if (!Files.exists(schemaPath)) {
                 // this should be an error, and we need to crash the app
@@ -67,42 +67,42 @@ public class SchemaService {
      * Otherwise, it's resolved relative to the current working directory (startup location).
      */
     private Path resolveSchemaPath() {
-        Path schemaPath =  Paths.get(schemaDirectory);
+        final Path schemaPath =  Paths.get(schemaDirectory);
         if (schemaPath.isAbsolute()) {
             // Absolute path
             return schemaPath;
         } else {
             // Relative to current working
-            Path applicationDir = Paths.get(System.getProperty("user.dir"));
+            final Path applicationDir = Paths.get(System.getProperty("user.dir"));
             return applicationDir.resolve(schemaPath);
         }
     }
 
-    private void loadSchemasFromFileSystem(Path schemaPath) {
+    private void loadSchemasFromFileSystem(final Path schemaPath) {
         try (Stream<Path> paths = Files.walk(schemaPath, 1)) {
             paths.filter(path -> path.toString().endsWith(".json"))
                     .forEach(path -> {
                         try {
                             loadSchemaMetadata(path);
-                        } catch (Exception e) {
+                        } catch (final Exception e) {
                             LOG.error("Error loading schema metadata from: {}", path, e);
                         }
                     });
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOG.error("Error scanning schema directory: {}", schemaPath, e);
         }
     }
 
-    private void loadSchemaMetadata(Path metadataPath) throws IOException {
-        String content = Files.readString(metadataPath, StandardCharsets.UTF_8);
-        SchemaInfo schemaInfo = objectMapper.readValue(content, SchemaInfo.class);
+    private void loadSchemaMetadata(final Path metadataPath) throws IOException {
+        final String content = Files.readString(metadataPath, StandardCharsets.UTF_8);
+        final SchemaInfo schemaInfo = objectMapper.readValue(content, SchemaInfo.class);
 
         // Load corresponding schema file
-        String schemaFileName = metadataPath.getFileName().toString().replace(".json", ".csvs");
-        Path schemaFilePath = metadataPath.getParent().resolve(schemaFileName);
+        final String schemaFileName = metadataPath.getFileName().toString().replace(".json", ".csvs");
+        final Path schemaFilePath = metadataPath.getParent().resolve(schemaFileName);
 
         if (Files.exists(schemaFilePath)) {
-            String schemaContent = Files.readString(schemaFilePath, StandardCharsets.UTF_8);
+            final String schemaContent = Files.readString(schemaFilePath, StandardCharsets.UTF_8);
             // TODO: Only load the schema content when needed
             schemaContents.put(schemaInfo.getId(), schemaContent);
             schemaFilePaths.put(schemaInfo.getId(), schemaFilePath);
@@ -117,11 +117,11 @@ public class SchemaService {
         return schemas;
     }
 
-    public String getSchema(String schemaId) {
+    public String getSchema(final String schemaId) {
         return schemaContents.get(schemaId);
     }
 
-    public Path getSchemaFilePath(String schemaId) {
+    public Path getSchemaFilePath(final String schemaId) {
         return schemaFilePaths.get(schemaId);
     }
 }
