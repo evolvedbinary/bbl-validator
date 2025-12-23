@@ -44,21 +44,23 @@ public class SchemaService {
                 // there's no log.fatal ????
                 // TODO talk to Adam about this
                 LOG.error("Schemas directory not found: {}", schemaPath);
-                return;
+                throw new IllegalStateException("Schemas directory not found: " + schemaPath);
             }
 
             if (!Files.isDirectory(schemaPath)) {
                 // this should be an error, and we need to crash the app
                 LOG.error("Schema path is not a directory: {}", schemaPath);
-                return;
+                throw new IllegalStateException("Schema path is not a directory: " + schemaPath);
             }
 
             // Scan for schema metadata files
             loadSchemasFromFileSystem(schemaPath);
 
             LOG.trace("Loaded {} schemas from: {}", schemas.size(), schemaPath);
-        } catch (Exception e) {
-            LOG.error("Error loading schemas from file system", e);
+        } catch (final SecurityException e) {
+            LOG.error("You don't have enough permissions to open this file: ", e);
+            throw new IllegalStateException("You don't have enough permissions to open Schema directory ");
+
         }
     }
 
@@ -85,12 +87,12 @@ public class SchemaService {
                     .forEach(path -> {
                         try {
                             loadSchemaMetadata(path);
-                        } catch (final Exception e) {
-                            LOG.error("Error loading schema metadata from: {}", path, e);
+                        } catch (final IOException e) {
+                            LOG.warn("Error loading schema metadata from: {}", path, e);
                         }
                     });
         } catch (final IOException e) {
-            LOG.error("Error scanning schema directory: {}", schemaPath, e);
+            LOG.warn("Error scanning schema directory: {}", schemaPath, e);
         }
     }
 
