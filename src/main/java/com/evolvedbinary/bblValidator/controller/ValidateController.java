@@ -48,7 +48,7 @@ public class ValidateController {
             return HttpResponse.ok(performValidation(downloadedFile, form.schemaId()));
         } catch (final IOException e) {
             LOG.trace("Failed to download file from URL: {}", form.url());
-            return HttpResponse.badRequest().body(new ErrorResponse(ErrorResponse.Code.NONE_RESOLVABLE_URL,"Unable to resolve url : " + form.url()));
+            return HttpResponse.badRequest().body(new ErrorResponse(ErrorResponse.Code.NON_RESOLVABLE_URL,"Unable to resolve url : " + form.url()));
         }
     }
 
@@ -67,7 +67,7 @@ public class ValidateController {
             return HttpResponse.badRequest().body(new ErrorResponse(ErrorResponse.Code.SCHEMA_NOT_FOUND,"Schema not found with ID: " + schemaId));
         }
         if(csvContent == null || csvContent.isEmpty()) {
-            return HttpResponse.badRequest().body(new ErrorResponse(ErrorResponse.Code.EMPTY_CSV,"Empty CSV content"));
+            return HttpResponse.badRequest().body(new ErrorResponse(ErrorResponse.Code.NO_CSV,"Empty CSV content"));
         }
         try {
             final Path tempFile = fileDownloadService.saveContentToTemp(csvContent);
@@ -76,9 +76,10 @@ public class ValidateController {
         } catch (final IOException e) {
             // TODO ASK Adam if this should be an error and wake someone from sleep
             LOG.error("Failed to save CSV content to temp file", e);
+            // TODO talk to Adam about this
             // what's the issue here excalty??
             // we didn't manage to save the given file to disk
-            return HttpResponse.badRequest().body(new ErrorResponse(ErrorResponse.Code.NONE_RESOLVABLE_URL,"Unable to : " + schemaId));
+            return HttpResponse.badRequest().body(new ErrorResponse(ErrorResponse.Code.NON_RESOLVABLE_URL,"Unable to : " + schemaId));
         }
     }
 
@@ -103,7 +104,7 @@ public class ValidateController {
 
         } catch (final IOException e) {
             LOG.trace("Failed to download file from URL: {}", url);
-            return HttpResponse.badRequest().body(new ErrorResponse(ErrorResponse.Code.NONE_RESOLVABLE_URL,"Unable to resolve url : " + url));
+            return HttpResponse.badRequest().body(new ErrorResponse(ErrorResponse.Code.NON_RESOLVABLE_URL,"Unable to resolve url : " + url));
         }
     }
 

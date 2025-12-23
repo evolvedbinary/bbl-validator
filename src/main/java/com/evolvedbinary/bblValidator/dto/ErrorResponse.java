@@ -7,8 +7,8 @@ public final class ErrorResponse implements ResponseObject {
     public enum Code {
         SCHEMA_NOT_FOUND, // provided schema id does not exist
         UNEXPECTED_ERROR,
-        EMPTY_CSV, // empty body or url content
-        NONE_RESOLVABLE_URL, // The url is malformed or do not resolve
+        NO_CSV, // empty body or url content
+        NON_RESOLVABLE_URL, // The url is malformed or do not resolve
         VALIDATION_ERROR // The validation failed
     }
 

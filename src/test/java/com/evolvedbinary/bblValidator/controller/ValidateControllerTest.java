@@ -139,7 +139,7 @@ public class ValidateControllerTest {
         // Get the error response
         ErrorResponse errorBody = exception.getResponse().getBody(ErrorResponse.class).orElse(null);
         assertNotNull(errorBody);
-        assertEquals(ErrorResponse.Code.EMPTY_CSV, errorBody.getCode());
+        assertEquals(ErrorResponse.Code.NO_CSV, errorBody.getCode());
         assertEquals("Empty CSV content", errorBody.getDescription());
     }
 
@@ -192,7 +192,7 @@ public class ValidateControllerTest {
         // Get the error response
         ErrorResponse errorBody = exception.getResponse().getBody(ErrorResponse.class).orElse(null);
         assertNotNull(errorBody);
-        assertEquals(ErrorResponse.Code.NONE_RESOLVABLE_URL, errorBody.getCode());
+        assertEquals(ErrorResponse.Code.NON_RESOLVABLE_URL, errorBody.getCode());
         assertEquals("Unable to resolve url : nothing", errorBody.getDescription());
     }
 
