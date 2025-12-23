@@ -33,6 +33,7 @@ public class SchemaControllerTest {
     @Value("${api.version}")
     String version;
 
+    private static final String BBLVALIDATOR_VERSION_HEADER = "X-BBLVALIDATOR-VERSION";
 
     @Test
     void schemaList() throws JsonProcessingException {
@@ -47,7 +48,7 @@ public class SchemaControllerTest {
         assertEquals(Optional.of(MediaType.APPLICATION_JSON_TYPE), response.getContentType());
 
         // assert the X-BBLVALIDATOR-VERSION is present and it's returning the expected value.
-        assertEquals(version, response.getHeaders().get("X-BBLVALIDATOR-VERSION"));
+        assertEquals(version, response.getHeaders().get(BBLVALIDATOR_VERSION_HEADER));
 
         // assert the body is not null
         assertTrue(response.getBody().isPresent());
@@ -92,7 +93,7 @@ public class SchemaControllerTest {
         assertEquals(Optional.of(MediaType.of("text/csv-schema")), response.getContentType());
 
         // assert the X-BBLVALIDATOR-VERSION is present and it's returning the expected value.
-        assertEquals(version, response.getHeaders().get("X-BBLVALIDATOR-VERSION"));
+        assertEquals(version, response.getHeaders().get(BBLVALIDATOR_VERSION_HEADER));
 
         // assert the returned schema
         assertEquals(Optional.of(expectedSchema), response.getBody());
@@ -108,7 +109,7 @@ public class SchemaControllerTest {
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
 
         // assert the X-BBLVALIDATOR-VERSION is present and it's returning the expected value.
-        assertEquals(version, exception.getResponse().getHeaders().get("X-BBLVALIDATOR-VERSION"));
+        assertEquals(version, exception.getResponse().getHeaders().get(BBLVALIDATOR_VERSION_HEADER));
 
         // assert the response type
         assertEquals(Optional.of(MediaType.APPLICATION_JSON_TYPE), exception.getResponse().getContentType());

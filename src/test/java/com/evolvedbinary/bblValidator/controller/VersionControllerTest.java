@@ -23,6 +23,8 @@ class VersionControllerTest {
     @Value("${api.version}")
     String version;
 
+    private static final String BBLVALIDATOR_VERSION_HEADER = "X-BBLVALIDATOR-VERSION";
+
     @Test
     void getVersion() {
         HttpRequest<Void> request = HttpRequest.GET("/");
@@ -36,7 +38,7 @@ class VersionControllerTest {
         assertEquals(Optional.of(MediaType.APPLICATION_JSON_TYPE), response.getContentType());
 
         // assert the X-BBLVALIDATOR-VERSION is present and it's returning the expected value.
-        assertEquals(version, response.getHeaders().get("X-BBLVALIDATOR-VERSION"));
+        assertEquals(version, response.getHeaders().get(BBLVALIDATOR_VERSION_HEADER));
 
         // assert the response returned version
         assertEquals(Optional.of(version), response.getBody().map(ApiVersion::getVersion));
