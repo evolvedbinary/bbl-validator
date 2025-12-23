@@ -2,6 +2,9 @@ package com.evolvedbinary.bblValidator.dto;
 
 import io.micronaut.serde.annotation.Serdeable;
 
+/**
+ * Data transfer object representing the API version information.
+ */
 @Serdeable
 public class ApiVersion {
 

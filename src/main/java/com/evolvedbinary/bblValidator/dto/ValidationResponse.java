@@ -5,6 +5,9 @@ import io.micronaut.serde.annotation.Serdeable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Response object representing the result of a validation operation.
+ */
 @Serdeable
 public final class ValidationResponse implements ResponseObject {
 

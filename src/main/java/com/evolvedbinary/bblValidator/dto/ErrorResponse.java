@@ -2,6 +2,9 @@ package com.evolvedbinary.bblValidator.dto;
 
 import io.micronaut.serde.annotation.Serdeable;
 
+/**
+ * Response object representing an error that occurred during validation.
+ */
 @Serdeable
 public final class ErrorResponse implements ResponseObject {
     public enum Code {

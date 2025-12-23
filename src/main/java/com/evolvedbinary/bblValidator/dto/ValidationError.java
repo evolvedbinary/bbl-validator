@@ -2,6 +2,9 @@ package com.evolvedbinary.bblValidator.dto;
 
 import io.micronaut.serde.annotation.Serdeable;
 
+/**
+ * Data transfer object representing a validation error with location information.
+ */
 @Serdeable
 public class ValidationError {
     
