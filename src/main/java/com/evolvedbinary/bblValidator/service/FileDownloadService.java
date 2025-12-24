@@ -31,7 +31,6 @@ public class FileDownloadService {
                 .followRedirects(HttpClient.Redirect.NORMAL)
                 .build();
         try {
-            //TODO: save the name for clean up
             this.sharedTempDir = Files.createTempDirectory(TEMP_DIR_NAME);
         } catch (final IOException e) {
             throw new RuntimeException("Failed to create or access persistent temp directory", e);

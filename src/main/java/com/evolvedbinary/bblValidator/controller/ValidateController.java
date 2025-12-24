@@ -46,7 +46,11 @@ public class ValidateController {
         try {
             final Path downloadedFile = fileDownloadService.downloadToTemp(form.url());
             LOG.trace("File downloaded to: {}", downloadedFile);
-            return HttpResponse.ok(performValidation(downloadedFile, form.schemaId()));
+            try {
+                return HttpResponse.ok(performValidation(downloadedFile, form.schemaId()));
+            } finally {
+                Files.delete(downloadedFile);
+            }
         } catch (final IOException e) {
             LOG.trace("Failed to download file from URL: {}", form.url());
             return HttpResponse.badRequest().body(new ErrorResponse(ErrorResponse.Code.NON_RESOLVABLE_URL,"Unable to resolve url : " + form.url()));
@@ -74,8 +78,7 @@ public class ValidateController {
             final Path tempFile = fileDownloadService.saveContentToTemp(csvContent);
             try {
                 LOG.trace("CSV content saved to: {}", tempFile);
-                final ResponseObject validation = performValidation(tempFile, schemaId);
-                return HttpResponse.ok(validation);
+                return HttpResponse.ok(performValidation(tempFile, schemaId));
             } finally {
                 Files.delete(tempFile);
             }
@@ -102,8 +105,11 @@ public class ValidateController {
         try {
             final Path downloadedFile = fileDownloadService.downloadToTemp(url);
             LOG.trace("File downloaded to: {}", downloadedFile);
-            return HttpResponse.ok(performValidation(downloadedFile, schemaId));
-
+            try {
+                return HttpResponse.ok(performValidation(downloadedFile, schemaId));
+            } finally {
+                Files.delete(downloadedFile);
+            }
         } catch (final IOException e) {
             LOG.trace("Failed to download file from URL: {}", url);
             return HttpResponse.badRequest().body(new ErrorResponse(ErrorResponse.Code.NON_RESOLVABLE_URL,"Unable to resolve url : " + url));
