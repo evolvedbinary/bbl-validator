@@ -16,11 +16,22 @@ public final class ErrorResponse implements ResponseObject {
         /**
          * A fatal error has occurred
          */
-        //TODO(YB)
         UNEXPECTED_ERROR,
-        NO_CSV, // empty body or url content
-        NON_RESOLVABLE_URL, // The url is malformed or do not resolve
-        VALIDATION_ERROR // The validation failed
+
+        /**
+         * No csv content to validate
+         */
+        NO_CSV,
+
+        /**
+         * The url is malformed or do not resolve
+         */
+        NON_RESOLVABLE_URL,
+        
+        /**
+         * The validation failed
+         */
+        VALIDATION_ERROR
     }
 
     private final Code code;
