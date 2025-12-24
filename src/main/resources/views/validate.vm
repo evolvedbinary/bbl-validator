@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+    <title>BBL Validator</title>
+</head>
+<body>
+    <div class="container">
+        <h1>BBL Validator</h1>
+        <form id="validateForm" action="/views/validate" method="POST">
+            <div class="form-group">
+                <label for="schemaId">Schema ID</label>
+                <select id="schemaId" name="schemaId" required>
+                    <option value="" disabled #if(!$schemaId || $schemaId == "") selected #end>Select a Schema</option>
+                    #foreach($schema in $schemas)
+                        <option value="$schema.id" #if($schema.id == $schemaId) selected #end>$schema.id</option>
+                    #end
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="csvContent">CSV Content</label>
+                <textarea id="csvContent" name="csvContent" placeholder="Paste your CSV content here..." required>$!csvContent</textarea>
+            </div>
+
+            <button type="submit" id="submitBtn">
+                <span id="btnText">Validate</span>
+            </button>
+        </form>
+
+        <div id="result">
+            #if($error)
+                <h3>Error</h3>
+                <p>$error.description</p>
+            #elseif($result)
+                <h3>Validation Result</h3>
+                <p>Status: <strong>#if($result.valid) Valid #else Invalid #end</strong></p>
+                <p>Execution Time: $result.executionTimeMs ms</p>
+            #end
+
+            #if($errorsTable)
+                <h3>Errors</h3>
+                #foreach($row in $errorsTable)
+                    <p>$row</p>
+                #end
+            #end
+        </div>
+    </div>
+</body>
+</html>

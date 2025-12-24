@@ -77,6 +77,20 @@
             <version>3.9.1</version>
         </dependency>
 
+        <!-- Micronaut view render  -->
+        <dependency>
+            <groupId>io.micronaut.views</groupId>
+            <artifactId>micronaut-views-core</artifactId>
+            <version>5.9.0</version>
+        </dependency>
+
+        <!-- Velocity template engine -->
+        <dependency>
+            <groupId>io.micronaut.views</groupId>
+            <artifactId>micronaut-views-velocity</artifactId>
+            <version>5.9.0</version>
+        </dependency>
+
         <!-- Logback for logging -->
         <dependency>
             <groupId>ch.qos.logback</groupId>

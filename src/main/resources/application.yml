@@ -6,4 +6,4 @@ micronaut:
 api:
   version: ${project.version}
 schema:
-  directory: schemas
+  directory: C:\Users\x\Documents\bbl-validator\src\main\resources\schemas
