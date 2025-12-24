@@ -8,7 +8,15 @@ import io.micronaut.serde.annotation.Serdeable;
 @Serdeable
 public final class ErrorResponse implements ResponseObject {
     public enum Code {
-        SCHEMA_NOT_FOUND, // provided schema id does not exist
+        /**
+         * provided schema id does not exist
+         */
+        SCHEMA_NOT_FOUND,
+
+        /**
+         * A fatal error has occurred
+         */
+        //TODO(YB)
         UNEXPECTED_ERROR,
         NO_CSV, // empty body or url content
         NON_RESOLVABLE_URL, // The url is malformed or do not resolve

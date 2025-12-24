@@ -19,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 
+import static com.evolvedbinary.bblValidator.filter.ApiVersionFilter.BBLVALIDATOR_VERSION_HEADER;
 import static org.junit.jupiter.api.Assertions.*;
 
 @MicronautTest
@@ -29,9 +30,7 @@ public class ValidateControllerTest {
 
     @Value("${api.version}")
     String version;
-
-    private static final String BBLVALIDATOR_VERSION_HEADER = "X-BBLVALIDATOR-VERSION";
-
+    
     @Value("${schema.directory}")
     String schemaTestDirectory;
 

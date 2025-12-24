@@ -29,7 +29,7 @@
         <dependency>
             <groupId>io.micronaut</groupId>
             <artifactId>micronaut-http-server-netty</artifactId>
-<!--        TODO check for updates    https://www.mend.io/vulnerability-database/CVE-2025-67735 -->
+        <!-- TODO(YB) check for updates    https://www.mend.io/vulnerability-database/CVE-2025-67735 -->
             <version>4.10.12</version>
         </dependency>
 
@@ -111,6 +111,12 @@
             <groupId>com.fasterxml.uuid</groupId>
             <artifactId>java-uuid-generator</artifactId>
             <version>5.2.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.jcip</groupId>
+            <artifactId>jcip-annotations</artifactId>
+            <version>1.0</version>
         </dependency>
 
         <!-- Test Dependencies -->

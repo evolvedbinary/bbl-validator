@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 @Controller("/validate")
@@ -71,15 +72,16 @@ public class ValidateController {
         }
         try {
             final Path tempFile = fileDownloadService.saveContentToTemp(csvContent);
-            LOG.trace("CSV content saved to: {}", tempFile);
-            return HttpResponse.ok(performValidation(tempFile, schemaId));
+            try {
+                LOG.trace("CSV content saved to: {}", tempFile);
+                final ResponseObject validation = performValidation(tempFile, schemaId);
+                return HttpResponse.ok(validation);
+            } finally {
+                Files.delete(tempFile);
+            }
         } catch (final IOException e) {
-            // TODO ASK Adam if this should be an error and wake someone from sleep
             LOG.error("Failed to save CSV content to temp file", e);
-            // TODO talk to Adam about this
-            // what's the issue here excalty??
-            // we didn't manage to save the given file to disk
-            return HttpResponse.badRequest().body(new ErrorResponse(ErrorResponse.Code.NON_RESOLVABLE_URL,"Unable to : " + schemaId));
+            return HttpResponse.serverError().body(new ErrorResponse(ErrorResponse.Code.UNEXPECTED_ERROR,"Unable to store CSV: " + e.getMessage()));
         }
     }
 

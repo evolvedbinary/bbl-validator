@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.annotation.Value;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Singleton;
+import net.jcip.annotations.GuardedBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,9 +18,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Stream;
 
-// TODO talk to Adam about syncronaztion
 @Singleton
 public class SchemaService {
 
@@ -29,7 +31,10 @@ public class SchemaService {
     private String schemaDirectory;
 
     private final List<SchemaInfo> schemas = new ArrayList<>();
+    private final ReadWriteLock schemaLock = new ReentrantReadWriteLock();
+    @GuardedBy("schemaLock")
     private final Map<String, String> schemaContents = new HashMap<>();
+    @GuardedBy("schemaLock")
     private final Map<String, Path> schemaFilePaths = new HashMap<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -40,15 +45,11 @@ public class SchemaService {
             final Path schemaPath = resolveSchemaPath();
 
             if (!Files.exists(schemaPath)) {
-                // this should be an error, and we need to crash the app
-                // there's no log.fatal ????
-                // TODO talk to Adam about this
                 LOG.error("Schemas directory not found: {}", schemaPath);
                 throw new IllegalStateException("Schemas directory not found: " + schemaPath);
             }
 
             if (!Files.isDirectory(schemaPath)) {
-                // this should be an error, and we need to crash the app
                 LOG.error("Schema path is not a directory: {}", schemaPath);
                 throw new IllegalStateException("Schema path is not a directory: " + schemaPath);
             }
@@ -106,9 +107,13 @@ public class SchemaService {
 
         if (Files.exists(schemaFilePath)) {
             final String schemaContent = Files.readString(schemaFilePath, StandardCharsets.UTF_8);
-            // TODO: Only load the schema content when needed
-            schemaContents.put(schemaInfo.getId(), schemaContent);
-            schemaFilePaths.put(schemaInfo.getId(), schemaFilePath);
+            schemaLock.writeLock().lock();
+            try {
+                schemaContents.put(schemaInfo.getId(), schemaContent);
+                schemaFilePaths.put(schemaInfo.getId(), schemaFilePath);
+            } finally {
+                schemaLock.writeLock().unlock();
+            }
             schemas.add(schemaInfo);
             LOG.trace("Loaded schema: {}", schemaInfo.getId());
         } else {
@@ -121,11 +126,21 @@ public class SchemaService {
     }
 
     public String getSchema(final String schemaId) {
-        return schemaContents.get(schemaId);
+        schemaLock.readLock().lock();
+        try {
+            return schemaContents.get(schemaId);
+        } finally {
+            schemaLock.readLock().unlock();
+        }
     }
 
     public Path getSchemaFilePath(final String schemaId) {
-        return schemaFilePaths.get(schemaId);
+        schemaLock.readLock().lock();
+        try {
+            return schemaFilePaths.get(schemaId);
+        } finally {
+            schemaLock.readLock().unlock();
+        }
     }
 }
 

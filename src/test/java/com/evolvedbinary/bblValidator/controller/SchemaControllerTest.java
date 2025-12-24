@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Optional;
 
+import static com.evolvedbinary.bblValidator.filter.ApiVersionFilter.BBLVALIDATOR_VERSION_HEADER;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -33,7 +34,6 @@ public class SchemaControllerTest {
     @Value("${api.version}")
     String version;
 
-    private static final String BBLVALIDATOR_VERSION_HEADER = "X-BBLVALIDATOR-VERSION";
 
     @Test
     void schemaList() throws JsonProcessingException {
