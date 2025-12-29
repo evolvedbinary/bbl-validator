@@ -50,12 +50,16 @@ public class ValidationViewController {
     @Post(value = "/validate", consumes = MediaType.APPLICATION_FORM_URLENCODED)
     public Map<String, Object> validateSubmit(@Body Map<String, String> formData) {
         String schemaId = formData.get("schemaId");
+        String csvSource = formData.get("csvSource");
+        String csvUrl = formData.get("csvUrl");
         String csvContent = formData.get("csvContent");
 
         Map<String, Object> model = new HashMap<>();
         model.put("version", version);
         model.put("schemas", schemaService.listSchemas());
         model.put("schemaId", schemaId);
+        model.put("csvSource", csvSource);
+        model.put("csvUrl", csvUrl);
         model.put("csvContent", csvContent);
 
         // if (schemaId == null || schemaId.trim().isEmpty()) {
@@ -68,13 +72,15 @@ public class ValidationViewController {
         //     return model;
         // }
 
-        // if (csvContent == null || csvContent.isEmpty()) {
-        //     model.put("error", new ErrorResponse(ErrorResponse.Code.NO_CSV, "Empty CSV content"));
-        //     return model;
-        // }
+        if ((csvContent == null || csvContent.isEmpty()) && (csvUrl == null || csvUrl.isEmpty())) {
+            model.put("error", new ErrorResponse(ErrorResponse.Code.NO_CSV, "Please provide either CSV content or CSV URL"));
+            return model;
+        }
+
+        boolean isUrl = csvSource.equals("url");
 
         try {
-            Path tempFile = fileDownloadService.saveContentToTemp(csvContent);
+            Path tempFile = isUrl ? fileDownloadService.downloadToTemp(csvUrl) : fileDownloadService.saveContentToTemp(csvContent);
             CsvValidationService.ValidationResult result = csvValidationService.validateCsvFile(tempFile, schemaId);
 
 

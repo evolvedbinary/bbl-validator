@@ -5,6 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
     <title>BBL Validator</title>
+    <style>
+        input[type="radio"]:not(:checked) ~ input,
+        input[type="radio"]:not(:checked) ~ textarea {
+            opacity: 0.1;
+            pointer-events: none; 
+        }
+
+        input[type="radio"]:checked ~ input,
+        input[type="radio"]:checked ~ textarea {
+            border: 2px solid #ccc;
+            opacity: 1;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -19,11 +32,20 @@
                     #end
                 </select>
             </div>
-            
-            <div class="form-group">
-                <label for="csvContent">CSV Content</label>
-                <textarea id="csvContent" name="csvContent" placeholder="Paste your CSV content here..." required>$!csvContent</textarea>
-            </div>
+
+            <label>
+                <input type="radio" name="csvSource" value="url" #if($csvSource == "url") checked #end required>
+                CSV URL
+                <br>
+                <input type="url" name="csvUrl" placeholder="Paste your CSV URL here..." value="$!csvUrl">
+            </label>
+
+            <label>
+                <input type="radio" name="csvSource" value="content" #if($csvSource == "content") checked #end required>
+                CSV Content
+                <br>
+                <textarea name="csvContent" placeholder="Paste your CSV content here...">$!csvContent</textarea>
+            </label>
 
             <button type="submit" id="submitBtn">
                 <span id="btnText">Validate</span>
