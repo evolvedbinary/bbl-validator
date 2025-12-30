@@ -60,7 +60,7 @@ public class SchemaService {
             LOG.trace("Loaded {} schemas from: {}", schemas.size(), schemaPath);
         } catch (final SecurityException e) {
             LOG.error("You don't have enough permissions to open this file: ", e);
-            throw new IllegalStateException("You don't have enough permissions to open Schema directory ");
+            throw new IllegalStateException("You don't have permission to open Schema directory ");
 
         }
     }

@@ -2,7 +2,7 @@ package com.evolvedbinary.bblValidator.dto;
 
 /**
  * This interface serves as a marker for all response types that can be returned
- * by the validation controller.
+ * by a controller.
  *
  * @see ErrorResponse
  * @see ValidationResponse
