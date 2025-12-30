@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Optional;
 
+import static com.evolvedbinary.bblValidator.controller.SchemaController.CSV_SCHEMA_MEDIA_TYPE;
 import static com.evolvedbinary.bblValidator.filter.ApiVersionFilter.BBLVALIDATOR_VERSION_HEADER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -92,7 +93,7 @@ public class SchemaControllerTest {
         assertEquals(HttpStatus.OK, response.getStatus());
 
         // assert the response type is "text/csv-schema"
-        assertEquals(Optional.of(MediaType.of("text/csv-schema")), response.getContentType());
+        assertEquals(Optional.of(CSV_SCHEMA_MEDIA_TYPE), response.getContentType());
 
         // assert the X-BBLVALIDATOR-VERSION is present and it's returning the expected value.
         assertEquals(version, response.getHeaders().get(BBLVALIDATOR_VERSION_HEADER));

@@ -3,10 +3,8 @@ package com.evolvedbinary.bblValidator.controller;
 import com.evolvedbinary.bblValidator.dto.ErrorResponse;
 import com.evolvedbinary.bblValidator.dto.ValidationResponse;
 import io.micronaut.context.annotation.Value;
-import io.micronaut.http.HttpRequest;
-import io.micronaut.http.HttpResponse;
-import io.micronaut.http.HttpStatus;
-import io.micronaut.http.MediaType;
+import io.micronaut.core.annotation.NonNull;
+import io.micronaut.http.*;
 import io.micronaut.http.client.HttpClient;
 import io.micronaut.http.client.annotation.Client;
 import io.micronaut.http.client.exceptions.HttpClientResponseException;
@@ -187,7 +185,7 @@ public class ValidateControllerTest {
                 "url", url
         );
 
-        final HttpRequest<?> request = HttpRequest.POST("/", formBody)
+        final HttpRequest<Map<String, String>> request = HttpRequest.POST("/", formBody)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         final HttpResponse<ValidationResponse> response = client.toBlocking().exchange(request, ValidationResponse.class);
@@ -225,7 +223,10 @@ public class ValidateControllerTest {
         final String url = "https://raw.githubusercontent.com/marmoure/bbl-validator/refs/heads/feature/vlidation/src/test/resources/schemas/concatPass.csv";
         final String schemaId = "concat";
 
-        final HttpRequest<Void> request = HttpRequest.POST("/?schema-id=" + schemaId + "&url=" + url, null);
+        final MutableHttpRequest<Void> request = HttpRequest.POST("/", null);
+        final MutableHttpParameters params = request.getParameters();
+        params.add("schema-id", schemaId);
+        params.add("url", url);
 
         final HttpResponse<ValidationResponse> response = client.toBlocking().exchange(request, ValidationResponse.class);
 
@@ -280,7 +281,10 @@ public class ValidateControllerTest {
 
     @Test
     void provideNonResolvableUrlAndValidateCsvFromForm() {
-        final String url = "nothing";
+        //TODO split this test to 2
+        // one for 404
+        // one for wrong url format
+        final String url = "https://static.evolvedbinary.com/404.csv";
         final String schemaId = "concat";
         final Map<String, String> formBody = Map.of(
                 "schemaId", schemaId,
@@ -339,7 +343,7 @@ public class ValidateControllerTest {
 
     @Test
     void provideNonResolvableUrlAndValidateCsvInQueryString() {
-
+        //TODO split this into 2
         final HttpRequest<Void> request = HttpRequest.POST("/?schema-id=concat&url=nothing", null);
 
         final HttpClientResponseException exception = assertThrows(HttpClientResponseException.class, () -> client.toBlocking().exchange(request, String.class));

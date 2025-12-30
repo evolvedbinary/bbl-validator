@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 @Controller("/schema")
 public class SchemaController {
+    public static final MediaType CSV_SCHEMA_MEDIA_TYPE = MediaType.of("text/csv-schema");
 
     @Inject
     SchemaService schemaService;
@@ -25,8 +26,11 @@ public class SchemaController {
     @Produces(MediaType.APPLICATION_JSON)
     public List<SchemaInfo> listSchemas(final HttpRequest<?> request) {
         final String host = request.getHeaders().get("Host");
+        final String path = request.getPath();
+        final String url = request.getUri().toString(); // /schema
         final String protocol = request.isSecure() ? "https://" : "http://";
 
+        // ${protocol}${host}/micronaut/schema/${id}
         
         return schemaService.listSchemas().stream()
                 .map(schema -> new SchemaInfo(schema.getId(), schema.getName(), schema.getVersion(), schema.getDate(), protocol + host + "/schema/" + schema.getId(), schema.getDescription()))
@@ -45,7 +49,7 @@ public class SchemaController {
         }
         return HttpResponse
                 .ok()
-                .contentType(MediaType.of("text/csv-schema"))
+                .contentType(CSV_SCHEMA_MEDIA_TYPE)
                 .body(schema);
     }
 }
