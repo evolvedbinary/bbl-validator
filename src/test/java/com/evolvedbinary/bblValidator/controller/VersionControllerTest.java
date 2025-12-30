@@ -2,7 +2,10 @@ package com.evolvedbinary.bblValidator.controller;
 
 import com.evolvedbinary.bblValidator.dto.ApiVersion;
 import io.micronaut.context.annotation.Value;
-import io.micronaut.http.*;
+import io.micronaut.http.HttpRequest;
+import io.micronaut.http.HttpResponse;
+import io.micronaut.http.HttpStatus;
+import io.micronaut.http.MediaType;
 import io.micronaut.http.client.HttpClient;
 import io.micronaut.http.client.annotation.Client;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
@@ -12,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Optional;
 
 import static com.evolvedbinary.bblValidator.filter.ApiVersionFilter.BBLVALIDATOR_VERSION_HEADER;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @MicronautTest
 class VersionControllerTest {

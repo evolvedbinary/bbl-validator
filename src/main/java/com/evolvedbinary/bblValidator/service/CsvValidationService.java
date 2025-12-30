@@ -5,7 +5,9 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.nationalarchives.csv.validator.api.java.*;
+import uk.gov.nationalarchives.csv.validator.api.java.CsvValidatorJavaBridge;
+import uk.gov.nationalarchives.csv.validator.api.java.FailMessage;
+import uk.gov.nationalarchives.csv.validator.api.java.Substitution;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;

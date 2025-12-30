@@ -1,7 +1,6 @@
 package com.evolvedbinary.bblValidator.controller;
 
 import com.evolvedbinary.bblValidator.dto.ErrorResponse;
-import com.evolvedbinary.bblValidator.dto.ValidationForm;
 import com.evolvedbinary.bblValidator.dto.ValidationResponse;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.http.HttpRequest;
@@ -22,7 +21,12 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.evolvedbinary.bblValidator.filter.ApiVersionFilter.BBLVALIDATOR_VERSION_HEADER;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @MicronautTest
 public class ValidateControllerTest {
