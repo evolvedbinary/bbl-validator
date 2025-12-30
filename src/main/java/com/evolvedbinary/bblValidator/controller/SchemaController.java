@@ -26,14 +26,12 @@ public class SchemaController {
     @Produces(MediaType.APPLICATION_JSON)
     public List<SchemaInfo> listSchemas(final HttpRequest<?> request) {
         final String host = request.getHeaders().get("Host");
-        final String path = request.getPath();
-        final String url = request.getUri().toString(); // /schema
+        final String path = request.getPath().replace("/schema", "/schema/");
         final String protocol = request.isSecure() ? "https://" : "http://";
+        final String url = protocol + host + path;
 
-        // ${protocol}${host}/micronaut/schema/${id}
-        
         return schemaService.listSchemas().stream()
-                .map(schema -> new SchemaInfo(schema.getId(), schema.getName(), schema.getVersion(), schema.getDate(), protocol + host + "/schema/" + schema.getId(), schema.getDescription()))
+                .map(schema -> new SchemaInfo(schema.getId(), schema.getName(), schema.getVersion(), schema.getDate(), url + schema.getId(), schema.getDescription()))
                 .collect(Collectors.toList());
     }
 
