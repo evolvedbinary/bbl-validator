@@ -76,8 +76,8 @@ public class SchemaInfo {
     }
 
     @Override
-    public final boolean equals(Object o) {
-        if (!(o instanceof SchemaInfo that)) {
+    public final boolean equals(final Object other) {
+        if (!(other instanceof SchemaInfo that)) {
             return false;
         }
 

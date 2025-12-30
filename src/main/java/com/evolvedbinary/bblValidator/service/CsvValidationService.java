@@ -56,8 +56,8 @@ public class CsvValidationService {
 
         final List<ValidationError> errors = new ArrayList<>();
 
-        for (FailMessage message : messages) {
-            ValidationError error = new ValidationError(
+        for (final FailMessage message : messages) {
+            final ValidationError error = new ValidationError(
                 message.getMessage(),
                 message.getLineNumber(),
                 message.getColumnIndex() + 1  // Add 1 for user display

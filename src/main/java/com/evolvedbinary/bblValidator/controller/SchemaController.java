@@ -23,9 +23,9 @@ public class SchemaController {
 
     @Get
     @Produces(MediaType.APPLICATION_JSON)
-    public List<SchemaInfo> listSchemas(HttpRequest<?> request) {
-        String host = request.getHeaders().get("Host");
-        String protocol = request.isSecure() ? "https://" : "http://";
+    public List<SchemaInfo> listSchemas(final HttpRequest<?> request) {
+        final String host = request.getHeaders().get("Host");
+        final String protocol = request.isSecure() ? "https://" : "http://";
 
         
         return schemaService.listSchemas().stream()
