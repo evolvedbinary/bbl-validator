@@ -21,6 +21,7 @@
         <micronaut.validation.version>4.12.0</micronaut.validation.version>
         <micronaut.test.resources.version>2.8.2</micronaut.test.resources.version>
         <micronaut.runtime>netty</micronaut.runtime>
+        <junit.version>6.0.1</junit.version>
         <exec.mainClass>com.evolvedbinary.bblValidator.Application</exec.mainClass>
     </properties>
 
@@ -130,14 +131,14 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.10.1</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.10.1</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
 
