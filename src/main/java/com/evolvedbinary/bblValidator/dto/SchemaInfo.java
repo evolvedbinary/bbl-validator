@@ -59,10 +59,6 @@ public class SchemaInfo {
         this.date = date;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
     public void setUrl(final String url) {
         this.url = url;
     }

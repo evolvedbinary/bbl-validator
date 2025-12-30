@@ -10,9 +10,6 @@ public class ApiVersion {
 
     private String version;
 
-    public ApiVersion() {
-    }
-
     public ApiVersion(final String version) {
         this.version = version;
     }

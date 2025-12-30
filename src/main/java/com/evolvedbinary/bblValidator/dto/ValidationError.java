@@ -8,12 +8,9 @@ import io.micronaut.serde.annotation.Serdeable;
 @Serdeable
 public class ValidationError {
     
-    private String message;
-    private int lineNumber;
-    private int columnIndex;
-
-    public ValidationError() {
-    }
+    private final String message;
+    private final int lineNumber;
+    private final int columnIndex;
 
     public ValidationError(final String message, final int lineNumber, final int columnIndex) {
         this.message = message;
@@ -25,23 +22,12 @@ public class ValidationError {
         return message;
     }
 
-    public void setMessage(final String message) {
-        this.message = message;
-    }
-
     public int getLineNumber() {
         return lineNumber;
-    }
-
-    public void setLineNumber(final int lineNumber) {
-        this.lineNumber = lineNumber;
     }
 
     public int getColumnIndex() {
         return columnIndex;
     }
 
-    public void setColumnIndex(final int columnIndex) {
-        this.columnIndex = columnIndex;
-    }
 }

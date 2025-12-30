@@ -86,7 +86,7 @@ public class CsvValidationService {
         }
 
         public static ValidationResult success(final long executionTimeMs) {
-            return new ValidationResult(true, new ArrayList<>(), executionTimeMs);
+            return new ValidationResult(true, Collections.emptyList(), executionTimeMs);
         }
 
         public boolean isValid() {
