@@ -3,6 +3,7 @@ package com.evolvedbinary.bblValidator.controller;
 import com.evolvedbinary.bblValidator.dto.ErrorResponse;
 import com.evolvedbinary.bblValidator.dto.SchemaInfo;
 import com.evolvedbinary.bblValidator.service.SchemaService;
+import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Controller;
@@ -12,6 +13,7 @@ import io.micronaut.http.annotation.PathVariable;
 import jakarta.inject.Inject;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller("/schema")
 public class SchemaController {
@@ -21,8 +23,14 @@ public class SchemaController {
 
     @Get
     @Produces(MediaType.APPLICATION_JSON)
-    public List<SchemaInfo> listSchemas() {
-        return schemaService.listSchemas();
+    public List<SchemaInfo> listSchemas(HttpRequest<?> request) {
+        String host = request.getHeaders().get("Host");
+        String protocol = request.isSecure() ? "https://" : "http://";
+
+        
+        return schemaService.listSchemas().stream()
+                .map(schema -> new SchemaInfo(schema.getId(), schema.getName(), schema.getVersion(), schema.getDate(), protocol + host + "/schema/" + schema.getId(), schema.getDescription()))
+                .collect(Collectors.toList());
     }
 
     @Get("/{schema-id}")
