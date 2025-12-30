@@ -33,7 +33,7 @@ public class FileDownloadService {
         try {
             this.sharedTempDir = Files.createTempDirectory(TEMP_DIR_NAME);
         } catch (final IOException e) {
-            throw new RuntimeException("Failed to create or access persistent temp directory", e);
+            throw new IllegalStateException("Failed to create or access persistent temp directory", e);
         }
     }
 
