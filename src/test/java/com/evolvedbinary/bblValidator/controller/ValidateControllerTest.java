@@ -3,7 +3,6 @@ package com.evolvedbinary.bblValidator.controller;
 import com.evolvedbinary.bblValidator.dto.ErrorResponse;
 import com.evolvedbinary.bblValidator.dto.ValidationResponse;
 import io.micronaut.context.annotation.Value;
-import io.micronaut.core.annotation.NonNull;
 import io.micronaut.http.*;
 import io.micronaut.http.client.HttpClient;
 import io.micronaut.http.client.annotation.Client;
@@ -43,8 +42,10 @@ public class ValidateControllerTest {
         final Path validCsvFile = Path.of(schemaTestDirectory, "concatPass.csv");
         final String csvContent = Files.readString(validCsvFile);
         
-        final HttpRequest<String> request = HttpRequest.POST("/?schema-id=concat", csvContent)
+        final MutableHttpRequest<String> request = HttpRequest.POST("/", csvContent)
                 .contentType(MediaType.TEXT_CSV);
+        final MutableHttpParameters params = request.getParameters();
+        params.add("schema-id", "concat");
         
         final HttpResponse<ValidationResponse> response = client.toBlocking().exchange(request, ValidationResponse.class);
         
@@ -65,9 +66,11 @@ public class ValidateControllerTest {
     void uploadAndValidateInvalidCsv() throws IOException {
         final Path invalidCsvFile = Path.of(schemaTestDirectory, "concatFail.csv");
         final String csvContent = Files.readString(invalidCsvFile);
-        
-        final HttpRequest<String> request = HttpRequest.POST("/?schema-id=concat", csvContent)
+
+        final MutableHttpRequest<String> request = HttpRequest.POST("/", csvContent)
                 .contentType(MediaType.TEXT_CSV);
+        final MutableHttpParameters params = request.getParameters();
+        params.add("schema-id", "concat");
         
         final HttpResponse<ValidationResponse> response = client.toBlocking().exchange(request, ValidationResponse.class);
         
@@ -102,8 +105,11 @@ public class ValidateControllerTest {
         final Path validCsvFile = Path.of(schemaTestDirectory, "concatPass.csv");
         final String csvContent = Files.readString(validCsvFile);
 
-        final HttpRequest<String> request = HttpRequest.POST("/?schema-id=nonExistingSchema", csvContent)
+        final MutableHttpRequest<String> request = HttpRequest.POST("/", csvContent)
                 .contentType(MediaType.TEXT_CSV);
+        final MutableHttpParameters params = request.getParameters();
+        params.add("schema-id", "nonExistingSchema");
+
         // Http client consider any response outside the 2xx range as exception
         final HttpClientResponseException exception = assertThrows(HttpClientResponseException.class, () -> client.toBlocking().exchange(request, String.class));
 
@@ -127,8 +133,11 @@ public class ValidateControllerTest {
     void uploadAndValidateCsvWithoutContent() throws IOException {
         final String csvContent = "";
 
-        final HttpRequest<String> request = HttpRequest.POST("/?schema-id=concat", csvContent)
+        final MutableHttpRequest<String> request = HttpRequest.POST("/", csvContent)
                 .contentType(MediaType.TEXT_CSV);
+        final MutableHttpParameters params = request.getParameters();
+        params.add("schema-id", "concat");
+
         // Http client consider any response outside the 2xx range as exception
         final HttpClientResponseException exception = assertThrows(HttpClientResponseException.class, () -> client.toBlocking().exchange(request, String.class));
 
@@ -157,7 +166,7 @@ public class ValidateControllerTest {
                 "url", url
         );
 
-        final HttpRequest<?> request = HttpRequest.POST("/", formBody)
+        final HttpRequest<Map<String, String>> request = HttpRequest.POST("/", formBody)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         final HttpResponse<ValidationResponse> response = client.toBlocking().exchange(request, ValidationResponse.class);
@@ -248,7 +257,10 @@ public class ValidateControllerTest {
         final String url = "https://raw.githubusercontent.com/marmoure/bbl-validator/refs/heads/feature/vlidation/src/test/resources/schemas/concatFail.csv";
         final String schemaId = "concat";
 
-        final HttpRequest<Void> request = HttpRequest.POST("/?schema-id=" + schemaId + "&url=" + url, null);
+        final MutableHttpRequest<Void> request = HttpRequest.POST("/", null);
+        final MutableHttpParameters params = request.getParameters();
+        params.add("schema-id", schemaId);
+        params.add("url", url);
 
         final HttpResponse<ValidationResponse> response = client.toBlocking().exchange(request, ValidationResponse.class);
         
@@ -281,9 +293,7 @@ public class ValidateControllerTest {
 
     @Test
     void provideNonResolvableUrlAndValidateCsvFromForm() {
-        //TODO split this test to 2
-        // one for 404
-        // one for wrong url format
+        //TODO(YB) seek help
         final String url = "https://static.evolvedbinary.com/404.csv";
         final String schemaId = "concat";
         final Map<String, String> formBody = Map.of(
@@ -291,7 +301,37 @@ public class ValidateControllerTest {
                 "url", url
         );
 
-        final HttpRequest<?> request = HttpRequest.POST("/", formBody)
+        final HttpRequest<Map<String, String>> request = HttpRequest.POST("/", formBody)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        final HttpClientResponseException exception = assertThrows(HttpClientResponseException.class, () -> client.toBlocking().exchange(request, String.class));
+
+        // assert the response status
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+
+        // assert the X-BBLVALIDATOR-VERSION is present and it's returning the expected value.
+        assertEquals(version, exception.getResponse().getHeaders().get(BBLVALIDATOR_VERSION_HEADER));
+
+        // assert the response type
+        assertEquals(Optional.of(MediaType.APPLICATION_JSON_TYPE), exception.getResponse().getContentType());
+
+        // Get the error response
+        final ErrorResponse errorBody = exception.getResponse().getBody(ErrorResponse.class).orElse(null);
+        assertNotNull(errorBody);
+        assertEquals(ErrorResponse.Code.NON_RESOLVABLE_URL, errorBody.getCode());
+        assertEquals("Unable to resolve url : nothing", errorBody.getDescription());
+    }
+
+    @Test
+    void provideInvalidUrlFormatAndValidateCsvFromForm() {
+        final String url = "nothing";
+        final String schemaId = "concat";
+        final Map<String, String> formBody = Map.of(
+                "schemaId", schemaId,
+                "url", url
+        );
+
+        final HttpRequest<Map<String, String>> request = HttpRequest.POST("/", formBody)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         final HttpClientResponseException exception = assertThrows(HttpClientResponseException.class, () -> client.toBlocking().exchange(request, String.class));
@@ -321,7 +361,7 @@ public class ValidateControllerTest {
                 "url", url
         );
 
-        final HttpRequest<?> request = HttpRequest.POST("/", formBody)
+        final HttpRequest<Map<String, String>> request = HttpRequest.POST("/", formBody)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         final HttpResponse<ValidationResponse> response = client.toBlocking().exchange(request, ValidationResponse.class);
@@ -342,8 +382,36 @@ public class ValidateControllerTest {
     }
 
     @Test
+    void provideInvalidUrlFormatAndValidateCsvInQueryString() {
+        final String schemaId = "concat";
+        final String url = "nothing";
+
+        final MutableHttpRequest<Void> request = HttpRequest.POST("/", null);
+        final MutableHttpParameters params = request.getParameters();
+        params.add("schema-id", schemaId);
+        params.add("url", url);
+
+        final HttpClientResponseException exception = assertThrows(HttpClientResponseException.class, () -> client.toBlocking().exchange(request, String.class));
+
+        // assert the response status
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+
+        // assert the X-BBLVALIDATOR-VERSION is present and it's returning the expected value.
+        assertEquals(version, exception.getResponse().getHeaders().get(BBLVALIDATOR_VERSION_HEADER));
+
+        // assert the response type
+        assertEquals(Optional.of(MediaType.APPLICATION_JSON_TYPE), exception.getResponse().getContentType());
+
+        // Get the error response
+        final ErrorResponse errorBody = exception.getResponse().getBody(ErrorResponse.class).orElse(null);
+        assertNotNull(errorBody);
+        assertEquals(ErrorResponse.Code.NON_RESOLVABLE_URL, errorBody.getCode());
+        assertEquals("Unable to resolve url : nothing", errorBody.getDescription());
+    }
+
+    @Test
     void provideNonResolvableUrlAndValidateCsvInQueryString() {
-        //TODO split this into 2
+        //TODO(YB)
         final HttpRequest<Void> request = HttpRequest.POST("/?schema-id=concat&url=nothing", null);
 
         final HttpClientResponseException exception = assertThrows(HttpClientResponseException.class, () -> client.toBlocking().exchange(request, String.class));
