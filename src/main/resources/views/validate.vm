@@ -75,9 +75,19 @@
 
             #if($errorsTable)
                 <h3>Errors</h3>
-                #foreach($row in $errorsTable)
-                    <p>$row</p>
-                #end
+                <table>
+                    <tr>
+                        <th>Error No.</th>
+                        <th>Message</th>
+                    </tr>
+                    #foreach($row in $errorsTable)
+                        <tr>
+                            <td>$foreach.count</td>
+                            <td>$row</td>
+                        </tr>
+                    #end
+
+                </table>
             #end
         </div>
     </div>
