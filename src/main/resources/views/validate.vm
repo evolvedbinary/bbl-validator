@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+    <link rel="stylesheet" href="/css/simple.min.css">
     <title>BBL Validator</title>
     <style>
         input[type="radio"]:not(:checked) ~ input,
         input[type="radio"]:not(:checked) ~ textarea {
-            opacity: 0.1;
+            opacity: 0.5;
             pointer-events: none; 
         }
 
@@ -16,6 +16,17 @@
         input[type="radio"]:checked ~ textarea {
             border: 2px solid #ccc;
             opacity: 1;
+        }
+
+        input[type="url"] {
+            width: 100%;
+            padding: 8px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 8px;
+            height: 200px;
         }
     </style>
 </head>

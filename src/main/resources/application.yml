@@ -3,7 +3,13 @@ micronaut:
     name: bbl-validator
   server:
     port: 8080
+  router:
+    static-resources:
+      default:
+        enabled: true
+        mapping: "/**"
+        paths: classpath:static
 api:
   version: ${project.version}
 schema:
-  directory: C:\Users\x\Documents\bbl-validator\src\main\resources\schemas
+  directory: schemas

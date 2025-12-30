@@ -43,6 +43,7 @@ public class ValidationViewController {
         Map<String, Object> model = new HashMap<>(); 
         model.put("version", version);
         model.put("schemas", schemaService.listSchemas());
+        model.put("csvSource", "url");
         return model;
     }
 
