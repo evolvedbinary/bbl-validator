@@ -29,9 +29,9 @@ class VersionControllerTest {
 
     @Test
     void getVersion() {
-        HttpRequest<Void> request = HttpRequest.GET("/");
+        final HttpRequest<Void> request = HttpRequest.GET("/");
         // deserialize the request to ApiVersion
-        HttpResponse<ApiVersion> response = client.toBlocking().exchange(request, ApiVersion.class);
+        final HttpResponse<ApiVersion> response = client.toBlocking().exchange(request, ApiVersion.class);
 
         // assert the response status
         assertEquals(HttpStatus.OK, response.getStatus());

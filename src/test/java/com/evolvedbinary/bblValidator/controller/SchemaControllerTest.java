@@ -39,9 +39,9 @@ public class SchemaControllerTest {
 
     @Test
     void schemaList() throws JsonProcessingException {
-        HttpRequest<Void> request = HttpRequest.GET("/");
+        final HttpRequest<Void> request = HttpRequest.GET("/");
         // get the raw response
-        HttpResponse<String> response = client.toBlocking().exchange(request, String.class);
+        final HttpResponse<String> response = client.toBlocking().exchange(request, String.class);
 
         // assert the response status
         assertEquals(HttpStatus.OK, response.getStatus());
@@ -54,13 +54,13 @@ public class SchemaControllerTest {
 
         // assert the body is not null
         assertTrue(response.getBody().isPresent());
-        String body = response.getBody().get();
+        final String body = response.getBody().get();
         // Parse the raw json
-        ObjectMapper mapper = new ObjectMapper();
-        List<SchemaInfo> list = mapper.readValue(body, new TypeReference<>() {});
+        final ObjectMapper mapper = new ObjectMapper();
+        final List<SchemaInfo> list = mapper.readValue(body, new TypeReference<>() {});
 
         // expected schema Info
-        SchemaInfo expectedSchemaInfo = new SchemaInfo();
+        final SchemaInfo expectedSchemaInfo = new SchemaInfo();
         expectedSchemaInfo.setId("concat");
         expectedSchemaInfo.setName("concat");
         expectedSchemaInfo.setDate("2015-11-01");
@@ -69,7 +69,7 @@ public class SchemaControllerTest {
         expectedSchemaInfo.setDescription("sample file for testing");
 
         // expected schema list
-        List<SchemaInfo> expectedList = List.of(
+        final List<SchemaInfo> expectedList = List.of(
                 expectedSchemaInfo
         );
 
@@ -79,14 +79,14 @@ public class SchemaControllerTest {
 
     @Test
     void getSchema() {
-        String expectedSchema = "version 1.1\r\n" +
+        final String expectedSchema = "version 1.1\r\n" +
                 "@totalColumns 3\r\n" +
                 "c1:\r\n" +
                 "c2:\r\n" +
                 "c3: is(concat($c1,$c2))\r\n";
-        HttpRequest<Void> request = HttpRequest.GET("/concat");
+        final HttpRequest<Void> request = HttpRequest.GET("/concat");
         // deserialize the request to SchemaInfo
-        HttpResponse<String> response = client.toBlocking().exchange(request, String.class);
+        final HttpResponse<String> response = client.toBlocking().exchange(request, String.class);
 
         // assert the response status
         assertEquals(HttpStatus.OK, response.getStatus());
@@ -103,9 +103,9 @@ public class SchemaControllerTest {
 
     @Test
     void getInvalidSchema() {
-        HttpRequest<Void> request = HttpRequest.GET("/none");
+        final HttpRequest<Void> request = HttpRequest.GET("/none");
         // Http client consider any response outside the 2xx range as exception
-        HttpClientResponseException exception = assertThrows(HttpClientResponseException.class, () -> client.toBlocking().exchange(request, String.class));
+        final HttpClientResponseException exception = assertThrows(HttpClientResponseException.class, () -> client.toBlocking().exchange(request, String.class));
 
         // assert the response status
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
@@ -117,7 +117,7 @@ public class SchemaControllerTest {
         assertEquals(Optional.of(MediaType.APPLICATION_JSON_TYPE), exception.getResponse().getContentType());
 
         // Get the error response
-        ErrorResponse errorBody = exception.getResponse().getBody(ErrorResponse.class).orElse(null);
+        final ErrorResponse errorBody = exception.getResponse().getBody(ErrorResponse.class).orElse(null);
         assertNotNull(errorBody);
         assertEquals(ErrorResponse.Code.SCHEMA_NOT_FOUND, errorBody.getCode());
         assertEquals("Schema not found with ID: none", errorBody.getDescription());

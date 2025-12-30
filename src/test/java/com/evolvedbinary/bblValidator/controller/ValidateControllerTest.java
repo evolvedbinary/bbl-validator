@@ -42,13 +42,13 @@ public class ValidateControllerTest {
 
     @Test
     void uploadAndValidateCsv() throws IOException {
-        Path validCsvFile = Path.of(schemaTestDirectory, "concatPass.csv");
-        String csvContent = Files.readString(validCsvFile);
+        final Path validCsvFile = Path.of(schemaTestDirectory, "concatPass.csv");
+        final String csvContent = Files.readString(validCsvFile);
         
-        HttpRequest<String> request = HttpRequest.POST("/?schema-id=concat", csvContent)
+        final HttpRequest<String> request = HttpRequest.POST("/?schema-id=concat", csvContent)
                 .contentType(MediaType.TEXT_CSV);
         
-        HttpResponse<ValidationResponse> response = client.toBlocking().exchange(request, ValidationResponse.class);
+        final HttpResponse<ValidationResponse> response = client.toBlocking().exchange(request, ValidationResponse.class);
         
         assertEquals(HttpStatus.OK, response.getStatus());
         assertEquals(Optional.of(MediaType.APPLICATION_JSON_TYPE), response.getContentType());
@@ -56,7 +56,7 @@ public class ValidateControllerTest {
         
         assertTrue(response.getBody().isPresent());
 
-        ValidationResponse validationResponse = response.getBody().get();
+        final ValidationResponse validationResponse = response.getBody().get();
         
         assertTrue(validationResponse.isValid());
         assertTrue(validationResponse.getErrors().isEmpty());
@@ -65,20 +65,20 @@ public class ValidateControllerTest {
 
     @Test
     void uploadAndValidateInvalidCsv() throws IOException {
-        Path invalidCsvFile = Path.of(schemaTestDirectory, "concatFail.csv");
-        String csvContent = Files.readString(invalidCsvFile);
+        final Path invalidCsvFile = Path.of(schemaTestDirectory, "concatFail.csv");
+        final String csvContent = Files.readString(invalidCsvFile);
         
-        HttpRequest<String> request = HttpRequest.POST("/?schema-id=concat", csvContent)
+        final HttpRequest<String> request = HttpRequest.POST("/?schema-id=concat", csvContent)
                 .contentType(MediaType.TEXT_CSV);
         
-        HttpResponse<ValidationResponse> response = client.toBlocking().exchange(request, ValidationResponse.class);
+        final HttpResponse<ValidationResponse> response = client.toBlocking().exchange(request, ValidationResponse.class);
         
         assertEquals(HttpStatus.OK, response.getStatus());
         assertEquals(Optional.of(MediaType.APPLICATION_JSON_TYPE), response.getContentType());
         
         assertTrue(response.getBody().isPresent());
 
-        ValidationResponse validationResponse = response.getBody().get();
+        final ValidationResponse validationResponse = response.getBody().get();
         
         assertFalse(validationResponse.isValid());
         assertFalse(validationResponse.getErrors().isEmpty());
@@ -90,7 +90,7 @@ public class ValidateControllerTest {
             assertTrue(error.getColumnIndex() >= 0);
         });
         
-        String errorMessage = "is(concat($c1, $c2)) fails for row: 3, column: c3, value: \"ccccc\"";
+        final String errorMessage = "is(concat($c1, $c2)) fails for row: 3, column: c3, value: \"ccccc\"";
 
         assertEquals(errorMessage, validationResponse.getErrors().getFirst().getMessage());
         assertEquals(3, validationResponse.getErrors().getFirst().getLineNumber());
@@ -101,13 +101,13 @@ public class ValidateControllerTest {
 
     @Test
     void uploadAndValidateCsvWithNonExistingSchema() throws IOException {
-        Path validCsvFile = Path.of(schemaTestDirectory, "concatPass.csv");
-        String csvContent = Files.readString(validCsvFile);
+        final Path validCsvFile = Path.of(schemaTestDirectory, "concatPass.csv");
+        final String csvContent = Files.readString(validCsvFile);
 
-        HttpRequest<String> request = HttpRequest.POST("/?schema-id=nonExistingSchema", csvContent)
+        final HttpRequest<String> request = HttpRequest.POST("/?schema-id=nonExistingSchema", csvContent)
                 .contentType(MediaType.TEXT_CSV);
         // Http client consider any response outside the 2xx range as exception
-        HttpClientResponseException exception = assertThrows(HttpClientResponseException.class, () -> client.toBlocking().exchange(request, String.class));
+        final HttpClientResponseException exception = assertThrows(HttpClientResponseException.class, () -> client.toBlocking().exchange(request, String.class));
 
         // assert the response status
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
@@ -119,7 +119,7 @@ public class ValidateControllerTest {
         assertEquals(Optional.of(MediaType.APPLICATION_JSON_TYPE), exception.getResponse().getContentType());
 
         // Get the error response
-        ErrorResponse errorBody = exception.getResponse().getBody(ErrorResponse.class).orElse(null);
+        final ErrorResponse errorBody = exception.getResponse().getBody(ErrorResponse.class).orElse(null);
         assertNotNull(errorBody);
         assertEquals(ErrorResponse.Code.SCHEMA_NOT_FOUND, errorBody.getCode());
         assertEquals("Schema not found with ID: nonExistingSchema", errorBody.getDescription());
@@ -127,12 +127,12 @@ public class ValidateControllerTest {
 
     @Test
     void uploadAndValidateCsvWithoutContent() throws IOException {
-        String csvContent = "";
+        final String csvContent = "";
 
-        HttpRequest<String> request = HttpRequest.POST("/?schema-id=concat", csvContent)
+        final HttpRequest<String> request = HttpRequest.POST("/?schema-id=concat", csvContent)
                 .contentType(MediaType.TEXT_CSV);
         // Http client consider any response outside the 2xx range as exception
-        HttpClientResponseException exception = assertThrows(HttpClientResponseException.class, () -> client.toBlocking().exchange(request, String.class));
+        final HttpClientResponseException exception = assertThrows(HttpClientResponseException.class, () -> client.toBlocking().exchange(request, String.class));
 
         // assert the response status
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
@@ -144,7 +144,7 @@ public class ValidateControllerTest {
         assertEquals(Optional.of(MediaType.APPLICATION_JSON_TYPE), exception.getResponse().getContentType());
 
         // Get the error response
-        ErrorResponse errorBody = exception.getResponse().getBody(ErrorResponse.class).orElse(null);
+        final ErrorResponse errorBody = exception.getResponse().getBody(ErrorResponse.class).orElse(null);
         assertNotNull(errorBody);
         assertEquals(ErrorResponse.Code.NO_CSV, errorBody.getCode());
         assertEquals("Empty CSV content", errorBody.getDescription());
@@ -152,17 +152,17 @@ public class ValidateControllerTest {
 
     @Test
     void provideUrlAndValidateCsvFromForm() {
-        String url = "https://raw.githubusercontent.com/marmoure/bbl-validator/refs/heads/feature/vlidation/src/test/resources/schemas/concatPass.csv";
-        String schemaId = "concat";
-        Map<String, String> formBody = Map.of(
+        final String url = "https://raw.githubusercontent.com/marmoure/bbl-validator/refs/heads/feature/vlidation/src/test/resources/schemas/concatPass.csv";
+        final String schemaId = "concat";
+        final Map<String, String> formBody = Map.of(
                 "schemaId", schemaId,
                 "url", url
         );
 
-        HttpRequest<?> request = HttpRequest.POST("/", formBody)
+        final HttpRequest<?> request = HttpRequest.POST("/", formBody)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        HttpResponse<ValidationResponse> response = client.toBlocking().exchange(request, ValidationResponse.class);
+        final HttpResponse<ValidationResponse> response = client.toBlocking().exchange(request, ValidationResponse.class);
 
         assertEquals(HttpStatus.OK, response.getStatus());
         assertEquals(Optional.of(MediaType.APPLICATION_JSON_TYPE), response.getContentType());
@@ -170,7 +170,7 @@ public class ValidateControllerTest {
 
         assertTrue(response.getBody().isPresent());
 
-        ValidationResponse validationResponse = response.getBody().get();
+        final ValidationResponse validationResponse = response.getBody().get();
 
         assertTrue(validationResponse.isValid());
         assertTrue(validationResponse.getErrors().isEmpty());
@@ -180,17 +180,17 @@ public class ValidateControllerTest {
 
     @Test
     void provideUrlAndValidateInvalidCsvFromForm() {
-        String url = "https://raw.githubusercontent.com/marmoure/bbl-validator/refs/heads/feature/vlidation/src/test/resources/schemas/concatFail.csv";
-        String schemaId = "concat";
-        Map<String, String> formBody = Map.of(
+        final String url = "https://raw.githubusercontent.com/marmoure/bbl-validator/refs/heads/feature/vlidation/src/test/resources/schemas/concatFail.csv";
+        final String schemaId = "concat";
+        final Map<String, String> formBody = Map.of(
                 "schemaId", schemaId,
                 "url", url
         );
 
-        HttpRequest<?> request = HttpRequest.POST("/", formBody)
+        final HttpRequest<?> request = HttpRequest.POST("/", formBody)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        HttpResponse<ValidationResponse> response = client.toBlocking().exchange(request, ValidationResponse.class);
+        final HttpResponse<ValidationResponse> response = client.toBlocking().exchange(request, ValidationResponse.class);
 
         assertEquals(HttpStatus.OK, response.getStatus());
         assertEquals(Optional.of(MediaType.APPLICATION_JSON_TYPE), response.getContentType());
@@ -198,7 +198,7 @@ public class ValidateControllerTest {
 
         assertTrue(response.getBody().isPresent());
 
-        ValidationResponse validationResponse = response.getBody().get();
+        final ValidationResponse validationResponse = response.getBody().get();
         
         assertFalse(validationResponse.isValid());
         assertFalse(validationResponse.getErrors().isEmpty());
@@ -210,7 +210,7 @@ public class ValidateControllerTest {
             assertTrue(error.getColumnIndex() >= 0);
         });
         
-        String errorMessage = "is(concat($c1, $c2)) fails for row: 3, column: c3, value: \"ccccc\"";
+        final String errorMessage = "is(concat($c1, $c2)) fails for row: 3, column: c3, value: \"ccccc\"";
 
         assertEquals(errorMessage, validationResponse.getErrors().getFirst().getMessage());
         assertEquals(3, validationResponse.getErrors().getFirst().getLineNumber());
@@ -222,12 +222,12 @@ public class ValidateControllerTest {
 
     @Test
     void provideUrlAndValidateCsvInQueryString() {
-        String url = "https://raw.githubusercontent.com/marmoure/bbl-validator/refs/heads/feature/vlidation/src/test/resources/schemas/concatPass.csv";
-        String schemaId = "concat";
+        final String url = "https://raw.githubusercontent.com/marmoure/bbl-validator/refs/heads/feature/vlidation/src/test/resources/schemas/concatPass.csv";
+        final String schemaId = "concat";
 
-        HttpRequest<Void> request = HttpRequest.POST("/?schema-id=" + schemaId + "&url=" + url, null);
+        final HttpRequest<Void> request = HttpRequest.POST("/?schema-id=" + schemaId + "&url=" + url, null);
 
-        HttpResponse<ValidationResponse> response = client.toBlocking().exchange(request, ValidationResponse.class);
+        final HttpResponse<ValidationResponse> response = client.toBlocking().exchange(request, ValidationResponse.class);
 
         assertEquals(HttpStatus.OK, response.getStatus());
         assertEquals(Optional.of(MediaType.APPLICATION_JSON_TYPE), response.getContentType());
@@ -235,7 +235,7 @@ public class ValidateControllerTest {
 
         assertTrue(response.getBody().isPresent());
 
-        ValidationResponse validationResponse = response.getBody().get();
+        final ValidationResponse validationResponse = response.getBody().get();
 
         assertTrue(validationResponse.isValid());
         assertTrue(validationResponse.getErrors().isEmpty());
@@ -244,19 +244,19 @@ public class ValidateControllerTest {
 
     @Test
     void provideUrlAndValidateInvalidCsvInQueryString() {
-        String url = "https://raw.githubusercontent.com/marmoure/bbl-validator/refs/heads/feature/vlidation/src/test/resources/schemas/concatFail.csv";
-        String schemaId = "concat";
+        final String url = "https://raw.githubusercontent.com/marmoure/bbl-validator/refs/heads/feature/vlidation/src/test/resources/schemas/concatFail.csv";
+        final String schemaId = "concat";
 
-        HttpRequest<Void> request = HttpRequest.POST("/?schema-id=" + schemaId + "&url=" + url, null);
+        final HttpRequest<Void> request = HttpRequest.POST("/?schema-id=" + schemaId + "&url=" + url, null);
 
-        HttpResponse<ValidationResponse> response = client.toBlocking().exchange(request, ValidationResponse.class);
+        final HttpResponse<ValidationResponse> response = client.toBlocking().exchange(request, ValidationResponse.class);
         
         assertEquals(HttpStatus.OK, response.getStatus());
         assertEquals(Optional.of(MediaType.APPLICATION_JSON_TYPE), response.getContentType());
         
         assertTrue(response.getBody().isPresent());
 
-        ValidationResponse validationResponse = response.getBody().get();
+        final ValidationResponse validationResponse = response.getBody().get();
         
         assertFalse(validationResponse.isValid());
         assertFalse(validationResponse.getErrors().isEmpty());
@@ -268,7 +268,7 @@ public class ValidateControllerTest {
             assertTrue(error.getColumnIndex() >= 0);
         });
         
-        String errorMessage = "is(concat($c1, $c2)) fails for row: 3, column: c3, value: \"ccccc\"";
+        final String errorMessage = "is(concat($c1, $c2)) fails for row: 3, column: c3, value: \"ccccc\"";
 
         assertEquals(errorMessage, validationResponse.getErrors().getFirst().getMessage());
         assertEquals(3, validationResponse.getErrors().getFirst().getLineNumber());
@@ -280,17 +280,17 @@ public class ValidateControllerTest {
 
     @Test
     void provideNonResolvableUrlAndValidateCsvFromForm() {
-        String url = "nothing";
-        String schemaId = "concat";
-        Map<String, String> formBody = Map.of(
+        final String url = "nothing";
+        final String schemaId = "concat";
+        final Map<String, String> formBody = Map.of(
                 "schemaId", schemaId,
                 "url", url
         );
 
-        HttpRequest<?> request = HttpRequest.POST("/", formBody)
+        final HttpRequest<?> request = HttpRequest.POST("/", formBody)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        HttpClientResponseException exception = assertThrows(HttpClientResponseException.class, () -> client.toBlocking().exchange(request, String.class));
+        final HttpClientResponseException exception = assertThrows(HttpClientResponseException.class, () -> client.toBlocking().exchange(request, String.class));
 
         // assert the response status
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
@@ -302,7 +302,7 @@ public class ValidateControllerTest {
         assertEquals(Optional.of(MediaType.APPLICATION_JSON_TYPE), exception.getResponse().getContentType());
 
         // Get the error response
-        ErrorResponse errorBody = exception.getResponse().getBody(ErrorResponse.class).orElse(null);
+        final ErrorResponse errorBody = exception.getResponse().getBody(ErrorResponse.class).orElse(null);
         assertNotNull(errorBody);
         assertEquals(ErrorResponse.Code.NON_RESOLVABLE_URL, errorBody.getCode());
         assertEquals("Unable to resolve url : nothing", errorBody.getDescription());
@@ -310,17 +310,17 @@ public class ValidateControllerTest {
 
     @Test
     void provideNonCsvUrlAndValidateCsvFromForm() {
-        String url = "https://picsum.photos/200/300";
-        String schemaId = "concat";
-        Map<String, String> formBody = Map.of(
+        final String url = "https://picsum.photos/200/300";
+        final String schemaId = "concat";
+        final Map<String, String> formBody = Map.of(
                 "schemaId", schemaId,
                 "url", url
         );
 
-        HttpRequest<?> request = HttpRequest.POST("/", formBody)
+        final HttpRequest<?> request = HttpRequest.POST("/", formBody)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        HttpResponse<ValidationResponse> response = client.toBlocking().exchange(request, ValidationResponse.class);
+        final HttpResponse<ValidationResponse> response = client.toBlocking().exchange(request, ValidationResponse.class);
 
         assertEquals(HttpStatus.OK, response.getStatus());
         assertEquals(Optional.of(MediaType.APPLICATION_JSON_TYPE), response.getContentType());
@@ -328,7 +328,7 @@ public class ValidateControllerTest {
 
         assertTrue(response.getBody().isPresent());
 
-        ValidationResponse validationResponse = response.getBody().get();
+        final ValidationResponse validationResponse = response.getBody().get();
         
         assertFalse(validationResponse.isValid());
         assertFalse(validationResponse.getErrors().isEmpty());
@@ -340,9 +340,9 @@ public class ValidateControllerTest {
     @Test
     void provideNonResolvableUrlAndValidateCsvInQueryString() {
 
-        HttpRequest<Void> request = HttpRequest.POST("/?schema-id=concat&url=nothing", null);
+        final HttpRequest<Void> request = HttpRequest.POST("/?schema-id=concat&url=nothing", null);
 
-        HttpClientResponseException exception = assertThrows(HttpClientResponseException.class, () -> client.toBlocking().exchange(request, String.class));
+        final HttpClientResponseException exception = assertThrows(HttpClientResponseException.class, () -> client.toBlocking().exchange(request, String.class));
 
         // assert the response status
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
@@ -354,7 +354,7 @@ public class ValidateControllerTest {
         assertEquals(Optional.of(MediaType.APPLICATION_JSON_TYPE), exception.getResponse().getContentType());
 
         // Get the error response
-        ErrorResponse errorBody = exception.getResponse().getBody(ErrorResponse.class).orElse(null);
+        final ErrorResponse errorBody = exception.getResponse().getBody(ErrorResponse.class).orElse(null);
         assertNotNull(errorBody);
         assertEquals(ErrorResponse.Code.NON_RESOLVABLE_URL, errorBody.getCode());
         assertEquals("Unable to resolve url : nothing", errorBody.getDescription());
