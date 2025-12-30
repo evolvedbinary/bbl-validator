@@ -43,7 +43,7 @@ public class ValidateController {
     @Post
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public HttpResponse<ResponseObject> validateForm(@Body final ValidationForm form) {
-        if(null == schemaService.getSchema(form.schemaId())) {
+        if (null == schemaService.getSchema(form.schemaId())) {
             return HttpResponse.badRequest().body(new ErrorResponse(ErrorResponse.Code.SCHEMA_NOT_FOUND,"Schema not found with ID: " + form.schemaId()));
         }
         try {
@@ -71,10 +71,10 @@ public class ValidateController {
     @Consumes(MediaType.TEXT_CSV)
     public HttpResponse<ResponseObject> validateCsv(@QueryValue("schema-id") final String schemaId,
                                                     @Nullable @Body final String csvContent) {
-        if(schemaService.getSchema(schemaId) == null) {
+        if (schemaService.getSchema(schemaId) == null) {
             return HttpResponse.badRequest().body(new ErrorResponse(ErrorResponse.Code.SCHEMA_NOT_FOUND,"Schema not found with ID: " + schemaId));
         }
-        if(csvContent == null || csvContent.isEmpty()) {
+        if (csvContent == null || csvContent.isEmpty()) {
             return HttpResponse.badRequest().body(new ErrorResponse(ErrorResponse.Code.NO_CSV,"Empty CSV content"));
         }
         try {
@@ -102,7 +102,7 @@ public class ValidateController {
     @Consumes(MediaType.ALL)
     public HttpResponse<ResponseObject> validateParams(@QueryValue("schema-id") final String schemaId,
                                                        @QueryValue final String url) {
-        if(schemaService.getSchema(schemaId) == null) {
+        if (schemaService.getSchema(schemaId) == null) {
             return HttpResponse.badRequest().body(new ErrorResponse(ErrorResponse.Code.SCHEMA_NOT_FOUND,"Schema not found with ID: " + schemaId));
         }
         try {
