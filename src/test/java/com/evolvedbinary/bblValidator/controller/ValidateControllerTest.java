@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
 
 @MicronautTest
 public class ValidateControllerTest {
@@ -62,6 +61,7 @@ public class ValidateControllerTest {
         final ValidationResponse validationResponse = response.getBody().get();
         
         assertTrue(validationResponse.isValid());
+        assertTrue(validationResponse.isUtf8Valid());
         assertTrue(validationResponse.getErrors().isEmpty());
         assertTrue(validationResponse.getExecutionTimeMs() > -1);
     }
@@ -86,6 +86,7 @@ public class ValidateControllerTest {
         final ValidationResponse validationResponse = response.getBody().get();
         
         assertFalse(validationResponse.isValid());
+        assertTrue(validationResponse.isUtf8Valid());
         assertFalse(validationResponse.getErrors().isEmpty());
 
         validationResponse.getErrors().forEach(error -> {
@@ -184,6 +185,7 @@ public class ValidateControllerTest {
         final ValidationResponse validationResponse = response.getBody().get();
 
         assertTrue(validationResponse.isValid());
+        assertTrue(validationResponse.isUtf8Valid());
         assertTrue(validationResponse.getErrors().isEmpty());
         assertTrue(validationResponse.getExecutionTimeMs() > -1);
 
@@ -212,6 +214,7 @@ public class ValidateControllerTest {
         final ValidationResponse validationResponse = response.getBody().get();
         
         assertFalse(validationResponse.isValid());
+        assertTrue(validationResponse.isUtf8Valid());
         assertFalse(validationResponse.getErrors().isEmpty());
 
         validationResponse.getErrors().forEach(error -> {
@@ -252,6 +255,7 @@ public class ValidateControllerTest {
         final ValidationResponse validationResponse = response.getBody().get();
 
         assertTrue(validationResponse.isValid());
+        assertTrue(validationResponse.isUtf8Valid());
         assertTrue(validationResponse.getErrors().isEmpty());
         assertTrue(validationResponse.getExecutionTimeMs() > -1);
     }
@@ -276,6 +280,7 @@ public class ValidateControllerTest {
         final ValidationResponse validationResponse = response.getBody().get();
         
         assertFalse(validationResponse.isValid());
+        assertTrue(validationResponse.isUtf8Valid());
         assertFalse(validationResponse.getErrors().isEmpty());
 
         validationResponse.getErrors().forEach(error -> {
@@ -357,7 +362,7 @@ public class ValidateControllerTest {
 
     @Test
     void provideNonCsvUrlAndValidateCsvFromForm() {
-        final String url = "https://evolvedbinary.com/images/icons/ev-logo.svg";
+        final String url = server.getURL() + "/mock-data/utf8-invalid.jpg";
         final String schemaId = "concat";
         final Map<String, String> formBody = Map.of(
                 "schemaId", schemaId,
@@ -378,6 +383,7 @@ public class ValidateControllerTest {
         final ValidationResponse validationResponse = response.getBody().get();
         
         assertFalse(validationResponse.isValid());
+        assertFalse(validationResponse.isUtf8Valid());
         assertFalse(validationResponse.getErrors().isEmpty());
 
         assertTrue(validationResponse.getExecutionTimeMs() > -1);
@@ -442,7 +448,7 @@ public class ValidateControllerTest {
 
     @Test
     void provideNonCsvUrlAndValidateCsvInQueryString() {
-        final String url = "https://evolvedbinary.com/images/icons/ev-logo.svg";
+        final String url = server.getURL() + "/mock-data/utf8-invalid.jpg";
         final String schemaId = "concat";
 
         final MutableHttpRequest<Void> request = HttpRequest.POST("/", null);
@@ -461,6 +467,7 @@ public class ValidateControllerTest {
         final ValidationResponse validationResponse = response.getBody().get();
 
         assertFalse(validationResponse.isValid());
+        assertFalse(validationResponse.isUtf8Valid());
         assertFalse(validationResponse.getErrors().isEmpty());
 
         assertTrue(validationResponse.getExecutionTimeMs() > -1);

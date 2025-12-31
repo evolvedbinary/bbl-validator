@@ -10,7 +10,9 @@ micronaut:
       mock-data:
         enabled: true
         mapping: "/mock-data/**"
-        paths: "classpath:schemas"
+        paths:
+          - "classpath:schemas"
+          - "classpath:static"
 api:
   version: ${project.version}
 schema:
