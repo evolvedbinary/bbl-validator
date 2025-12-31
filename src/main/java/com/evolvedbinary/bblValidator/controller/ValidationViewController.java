@@ -63,15 +63,6 @@ public class ValidationViewController {
         model.put("csvUrl", csvUrl);
         model.put("csvContent", csvContent);
 
-        // if (schemaId == null || schemaId.trim().isEmpty()) {
-        //     model.put("error", new ErrorResponse(ErrorResponse.Code.SCHEMA_NOT_FOUND, "Schema ID is required"));
-        //     return model;
-        // }
-        
-        // if (schemaService.getSchema(schemaId) == null) {
-        //     model.put("error", new ErrorResponse(ErrorResponse.Code.SCHEMA_NOT_FOUND, "Schema not found with ID: " + schemaId));
-        //     return model;
-        // }
 
         if ((csvContent == null || csvContent.isEmpty()) && (csvUrl == null || csvUrl.isEmpty())) {
             model.put("error", new ErrorResponse(ErrorResponse.Code.NO_CSV, "Please provide either CSV content or CSV URL"));
