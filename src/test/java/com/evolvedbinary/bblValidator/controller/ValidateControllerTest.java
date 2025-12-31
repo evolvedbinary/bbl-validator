@@ -7,6 +7,7 @@ import io.micronaut.http.*;
 import io.micronaut.http.client.HttpClient;
 import io.micronaut.http.client.annotation.Client;
 import io.micronaut.http.client.exceptions.HttpClientResponseException;
+import io.micronaut.runtime.server.EmbeddedServer;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,9 @@ public class ValidateControllerTest {
     @Inject
     @Client("/validate")
     HttpClient client;
+
+    @Inject
+    EmbeddedServer server;
 
     @Value("${api.version}")
     String version;
@@ -159,7 +163,7 @@ public class ValidateControllerTest {
 
     @Test
     void provideUrlAndValidateCsvFromForm() {
-        final String url = "https://raw.githubusercontent.com/marmoure/bbl-validator/refs/heads/feature/vlidation/src/test/resources/schemas/concatPass.csv";
+        final String url = server.getURL() + "/mock-data/concatPass.csv";
         final String schemaId = "concat";
         final Map<String, String> formBody = Map.of(
                 "schemaId", schemaId,
@@ -187,7 +191,7 @@ public class ValidateControllerTest {
 
     @Test
     void provideUrlAndValidateInvalidCsvFromForm() {
-        final String url = "https://raw.githubusercontent.com/marmoure/bbl-validator/refs/heads/feature/vlidation/src/test/resources/schemas/concatFail.csv";
+        final String url = server.getURL() + "/mock-data/concatFail.csv";
         final String schemaId = "concat";
         final Map<String, String> formBody = Map.of(
                 "schemaId", schemaId,
@@ -229,7 +233,7 @@ public class ValidateControllerTest {
 
     @Test
     void provideUrlAndValidateCsvInQueryString() {
-        final String url = "https://raw.githubusercontent.com/marmoure/bbl-validator/refs/heads/feature/vlidation/src/test/resources/schemas/concatPass.csv";
+        final String url = server.getURL() + "/mock-data/concatPass.csv";
         final String schemaId = "concat";
 
         final MutableHttpRequest<Void> request = HttpRequest.POST("/", null);
@@ -254,7 +258,7 @@ public class ValidateControllerTest {
 
     @Test
     void provideUrlAndValidateInvalidCsvInQueryString() {
-        final String url = "https://raw.githubusercontent.com/marmoure/bbl-validator/refs/heads/feature/vlidation/src/test/resources/schemas/concatFail.csv";
+        final String url = server.getURL() + "/mock-data/concatFail.csv";
         final String schemaId = "concat";
 
         final MutableHttpRequest<Void> request = HttpRequest.POST("/", null);
@@ -354,7 +358,7 @@ public class ValidateControllerTest {
 
     @Test
     void provideNonCsvUrlAndValidateCsvFromForm() {
-        final String url = "https://picsum.photos/200/300";
+        final String url = "https://evolvedbinary.com/images/icons/ev-logo.svg";
         final String schemaId = "concat";
         final Map<String, String> formBody = Map.of(
                 "schemaId", schemaId,
@@ -411,8 +415,14 @@ public class ValidateControllerTest {
 
     @Test
     void provideNonResolvableUrlAndValidateCsvInQueryString() {
-        //TODO(YB)
-        final HttpRequest<Void> request = HttpRequest.POST("/?schema-id=concat&url=nothing", null);
+        //TODO(YB) seek help
+        final String url = "https://static.evolvedbinary.com/404.csv";
+        final String schemaId = "concat";
+
+        final MutableHttpRequest<Void> request = HttpRequest.POST("/", null);
+        final MutableHttpParameters params = request.getParameters();
+        params.add("schema-id", schemaId);
+        params.add("url", url);
 
         final HttpClientResponseException exception = assertThrows(HttpClientResponseException.class, () -> client.toBlocking().exchange(request, String.class));
 
@@ -434,7 +444,28 @@ public class ValidateControllerTest {
 
     @Test
     void provideNonCsvUrlAndValidateCsvInQueryString() {
-        fail("TODO implement");
+        final String url = "https://evolvedbinary.com/images/icons/ev-logo.svg";
+        final String schemaId = "concat";
+
+        final MutableHttpRequest<Void> request = HttpRequest.POST("/", null);
+        final MutableHttpParameters params = request.getParameters();
+        params.add("schema-id", schemaId);
+        params.add("url", url);
+
+        final HttpResponse<ValidationResponse> response = client.toBlocking().exchange(request, ValidationResponse.class);
+
+        assertEquals(HttpStatus.OK, response.getStatus());
+        assertEquals(Optional.of(MediaType.APPLICATION_JSON_TYPE), response.getContentType());
+        assertEquals(version, response.getHeaders().get(BBLVALIDATOR_VERSION_HEADER));
+
+        assertTrue(response.getBody().isPresent());
+
+        final ValidationResponse validationResponse = response.getBody().get();
+
+        assertFalse(validationResponse.isValid());
+        assertFalse(validationResponse.getErrors().isEmpty());
+
+        assertTrue(validationResponse.getExecutionTimeMs() > -1);
     }
 
 }

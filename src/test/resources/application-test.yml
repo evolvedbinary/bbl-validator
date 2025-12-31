@@ -5,6 +5,12 @@ micronaut:
     #https://docs.micronaut.io/latest/guide/index.html#runningSpecificPort
     # Random port each time
     port: -1
+  router:
+    static-resources:
+      mock-data:
+        enabled: true
+        mapping: "/mock-data/**"
+        paths: "classpath:schemas"
 api:
   version: ${project.version}
 schema:
