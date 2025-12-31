@@ -55,8 +55,13 @@ public class CsvValidationService {
         }
 
         final List<ValidationError> errors = new ArrayList<>();
+        boolean utf8Valid = true;
 
         for (final FailMessage message : messages) {
+            // if one error is a UTF-8 error, then the file is not valid
+            if(message.getMessage().startsWith("[UTF-8 Error]")) {
+                utf8Valid = false;
+            }
             final ValidationError error = new ValidationError(
                 message.getMessage(),
                 message.getLineNumber(),
@@ -68,7 +73,8 @@ public class CsvValidationService {
         }
 
         LOG.trace("CSV validation completed - Valid: false, Errors: {} ({}ms)", errors.size(), executionTimeMs);
-        return new ValidationResult(false, errors, executionTimeMs);
+
+        return new ValidationResult(false, errors, executionTimeMs, utf8Valid);
     }
 
 
@@ -76,15 +82,17 @@ public class CsvValidationService {
         private final boolean valid;
         private final List<ValidationError> errors;
         private final long executionTimeMs;
+        private final boolean utf8Valid;
 
-        public ValidationResult(final boolean valid, final List<ValidationError> errors, final long executionTimeMs) {
+        public ValidationResult(final boolean valid, final List<ValidationError> errors, final long executionTimeMs, final boolean utf8Valid) {
             this.valid = valid;
             this.errors = errors;
             this.executionTimeMs = executionTimeMs;
+            this.utf8Valid = utf8Valid;
         }
 
         public static ValidationResult success(final long executionTimeMs) {
-            return new ValidationResult(true, Collections.emptyList(), executionTimeMs);
+            return new ValidationResult(true, Collections.emptyList(), executionTimeMs, true);
         }
 
         public boolean isValid() {
@@ -98,5 +106,7 @@ public class CsvValidationService {
         public long getExecutionTimeMs() {
             return executionTimeMs;
         }
+
+        public boolean isUtf8Valid() { return utf8Valid; }
     }
 }

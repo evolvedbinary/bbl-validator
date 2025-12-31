@@ -75,13 +75,8 @@ public class ValidationViewController {
             Path tempFile = isUrl ? fileDownloadService.downloadToTemp(csvUrl) : fileDownloadService.saveContentToTemp(csvContent);
             CsvValidationService.ValidationResult result = csvValidationService.validateCsvFile(tempFile, schemaId);
 
-
-            if (result.hasErrorMessage()) {
-                model.put("error", new ErrorResponse(ErrorResponse.Code.VALIDATION_ERROR, result.getErrorMessage()));
-            } else {
-                model.put("result", new ValidationResponse(result.isValid(), result.getErrors(), result.getExecutionTimeMs()));
-                model.put("errorsTable", getErrorsTable(result.getErrors()));
-            }
+            model.put("result", new ValidationResponse(result.isValid(), result.getErrors(), result.getExecutionTimeMs(), result.isUtf8Valid()));
+            model.put("errorsTable", getErrorsTable(result.getErrors()));
 
         } catch (IOException e) {
             model.put("error", new ErrorResponse(ErrorResponse.Code.UNEXPECTED_ERROR, "Internal error processing CSV: " + e.getMessage()));

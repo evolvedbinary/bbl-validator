@@ -122,6 +122,6 @@ public class ValidateController {
     private ResponseObject performValidation(final Path csvFile, final String schemaId) {
         final CsvValidationService.ValidationResult result = csvValidationService.validateCsvFile(csvFile, schemaId);
 
-        return new ValidationResponse(result.isValid(), result.getErrors(), result.getExecutionTimeMs());
+        return new ValidationResponse(result.isValid(), result.getErrors(), result.getExecutionTimeMs(), result.isUtf8Valid());
     }
 }

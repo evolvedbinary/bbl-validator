@@ -28,6 +28,26 @@
             padding: 8px;
             height: 200px;
         }
+
+        table {
+            width: 100%;
+            table-layout: fixed;
+            border-collapse: collapse;
+        }
+
+        table td {
+            white-space: normal; 
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            padding: 8px; 
+            vertical-align: top;
+        }
+
+        table th:first-child {
+            width: 100px;
+            white-space: nowrap;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -64,29 +84,30 @@
         </form>
 
         <div id="result">
-            #if($error)
-                <h3>Error</h3>
-                <p>$error.description</p>
-            #elseif($result)
+            #if($result)
                 <h3>Validation Result</h3>
                 <p>Status: <strong>#if($result.valid) Valid #else Invalid #end</strong></p>
+                #if(!$result.utf8Valid)
+                    <p><strong>The file is not valid UTF-8</strong></p>
+                #end
                 <p>Execution Time: $result.executionTimeMs ms</p>
             #end
 
             #if($errorsTable)
                 <h3>Errors</h3>
                 <table>
-                    <tr>
+                    <thead>
                         <th>Error No.</th>
                         <th>Message</th>
-                    </tr>
-                    #foreach($row in $errorsTable)
-                        <tr>
-                            <td>$foreach.count</td>
-                            <td>$row</td>
-                        </tr>
-                    #end
-
+                    </thead>
+                    <tbody>
+                        #foreach($row in $errorsTable)
+                            <tr>
+                                <th>$foreach.count</th>
+                                <td>$row</td>
+                            </tr>
+                        #end
+                    </tbody>
                 </table>
             #end
         </div>
