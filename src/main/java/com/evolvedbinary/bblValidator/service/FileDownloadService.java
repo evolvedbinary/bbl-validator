@@ -5,31 +5,52 @@ import com.fasterxml.uuid.impl.RandomBasedGenerator;
 import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Singleton
 public class FileDownloadService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FileDownloadService.class);
     private static final String TEMP_DIR_NAME = "bbl-validator";
-    private final HttpClient httpClient;
+
+    private final PoolingHttpClientConnectionManager poolingHttpClientConnectionManager;
+    private final RequestConfig httpRequestConfig;
+    private final CloseableHttpClient httpClient;
+
     private final Path sharedTempDir;
     private final RandomBasedGenerator generator = Generators.randomBasedGenerator();
 
     public FileDownloadService() {
-        this.httpClient = HttpClient.newBuilder()
-                .followRedirects(HttpClient.Redirect.NORMAL)
+        this.poolingHttpClientConnectionManager = new PoolingHttpClientConnectionManager();
+
+        this.httpRequestConfig = RequestConfig.custom()
+        .setConnectTimeout(10_000)
+        .setSocketTimeout(10_000)
+        .setConnectionRequestTimeout(3_000)
+        .build();
+
+        this.httpClient = HttpClients
+                .custom()
+                .setConnectionManager(poolingHttpClientConnectionManager)
+                .setDefaultRequestConfig(httpRequestConfig)
+                .evictIdleConnections(30, TimeUnit.SECONDS)
+                .evictExpiredConnections()
                 .build();
+
         try {
             this.sharedTempDir = Files.createTempDirectory(TEMP_DIR_NAME);
         } catch (final IOException e) {
@@ -49,18 +70,18 @@ public class FileDownloadService {
             final String filename = generateUuidFilename();
             final Path tempFile = sharedTempDir.resolve(filename);
 
-            final HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .GET()
-                    .build();
+            final HttpGet httpGet = new HttpGet(url);
 
-            final HttpResponse<InputStream> response = httpClient.send(
-                    request,
-                    HttpResponse.BodyHandlers.ofInputStream()
-            );
+            try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
+                
+                int statusCode = response.getStatusLine().getStatusCode();
+                if (statusCode != HttpStatus.SC_OK) {
+                    throw new IOException("Non Resolvable url: " + url);
+                }
 
-            try (InputStream inputStream = response.body()) {
-                Files.copy(inputStream, tempFile, StandardCopyOption.REPLACE_EXISTING);
+                try (InputStream inputStream = response.getEntity().getContent()) {
+                    Files.copy(inputStream, tempFile, StandardCopyOption.REPLACE_EXISTING);
+                }
             }
 
             LOG.trace("Downloaded file from {} to {}", url, tempFile);
@@ -68,9 +89,6 @@ public class FileDownloadService {
 
         } catch (final IllegalArgumentException e) {
             throw new IOException("Invalid URL format: " + url, e);
-        } catch (final InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new IOException("Download interrupted for URL: " + url, e);
         }
     }
 

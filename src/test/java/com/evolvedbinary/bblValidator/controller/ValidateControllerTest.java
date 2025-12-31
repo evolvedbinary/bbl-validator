@@ -297,7 +297,6 @@ public class ValidateControllerTest {
 
     @Test
     void provideNonResolvableUrlAndValidateCsvFromForm() {
-        //TODO(YB) seek help
         final String url = "https://static.evolvedbinary.com/404.csv";
         final String schemaId = "concat";
         final Map<String, String> formBody = Map.of(
@@ -323,7 +322,7 @@ public class ValidateControllerTest {
         final ErrorResponse errorBody = exception.getResponse().getBody(ErrorResponse.class).orElse(null);
         assertNotNull(errorBody);
         assertEquals(ErrorResponse.Code.NON_RESOLVABLE_URL, errorBody.getCode());
-        assertEquals("Unable to resolve url : nothing", errorBody.getDescription());
+        assertEquals("Unable to resolve url : " + url, errorBody.getDescription());
     }
 
     @Test
@@ -415,7 +414,6 @@ public class ValidateControllerTest {
 
     @Test
     void provideNonResolvableUrlAndValidateCsvInQueryString() {
-        //TODO(YB) seek help
         final String url = "https://static.evolvedbinary.com/404.csv";
         final String schemaId = "concat";
 
@@ -439,7 +437,7 @@ public class ValidateControllerTest {
         final ErrorResponse errorBody = exception.getResponse().getBody(ErrorResponse.class).orElse(null);
         assertNotNull(errorBody);
         assertEquals(ErrorResponse.Code.NON_RESOLVABLE_URL, errorBody.getCode());
-        assertEquals("Unable to resolve url : nothing", errorBody.getDescription());
+        assertEquals("Unable to resolve url : " + url, errorBody.getDescription());
     }
 
     @Test
