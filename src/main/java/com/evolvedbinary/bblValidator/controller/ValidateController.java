@@ -122,10 +122,6 @@ public class ValidateController {
     private ResponseObject performValidation(final Path csvFile, final String schemaId) {
         final CsvValidationService.ValidationResult result = csvValidationService.validateCsvFile(csvFile, schemaId);
 
-        if (result.hasErrorMessage()) {
-            return new ErrorResponse(ErrorResponse.Code.VALIDATION_ERROR,"An error occurred: " + result.getErrorMessage());
-        }
-
         return new ValidationResponse(result.isValid(), result.getErrors(), result.getExecutionTimeMs());
     }
 }

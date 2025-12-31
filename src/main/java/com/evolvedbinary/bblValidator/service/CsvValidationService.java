@@ -75,13 +75,11 @@ public class CsvValidationService {
     public static class ValidationResult {
         private final boolean valid;
         private final List<ValidationError> errors;
-        private final String errorMessage;
         private final long executionTimeMs;
 
         public ValidationResult(final boolean valid, final List<ValidationError> errors, final long executionTimeMs) {
             this.valid = valid;
             this.errors = errors;
-            this.errorMessage = null;
             this.executionTimeMs = executionTimeMs;
         }
 
@@ -95,14 +93,6 @@ public class CsvValidationService {
 
         public List<ValidationError> getErrors() {
             return errors;
-        }
-
-        public String getErrorMessage() {
-            return errorMessage;
-        }
-
-        public boolean hasErrorMessage() {
-            return errorMessage != null;
         }
 
         public long getExecutionTimeMs() {
