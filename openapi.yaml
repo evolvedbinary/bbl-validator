@@ -1,8 +1,8 @@
 openapi: 3.1.0
 
 info:
-  title: Broaband Label Validator API
-  description: A HTTP REST API validation service for validating Broardband Labels
+  title: Broadband Label Validator API
+  description: A HTTP REST API validation service for validating Broadband Labels
   version: 1.0.0
   contact:
     email: tech@evolvedbinary.com
@@ -81,8 +81,8 @@ paths:
               schema:
                 type: string
                 description: The CSV Schema
-        '404':
-          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '500':
           $ref: '#/components/responses/InternalServerError'
           
@@ -97,7 +97,7 @@ paths:
         - in: query
           name: schema-id
           required: false
-          description: The ID of the CSV Schema to use for valdidation
+          description: The ID of the CSV Schema to use for validation
           schema:
             type: string
             examples:
@@ -112,7 +112,7 @@ paths:
             examples:
               - "https://bbl-validator.evolvedbinary.com/schema/bbl-global-schema-1.2.0.csvs"
       requestBody:
-        description: Either a Broadband Label File, or parameters on where to retrive a Broadband Label File from
+        description: Either a Broadband Label File, or parameters on where to retrieve a Broadband Label File from
         required: false
         content:
           text/csv:
@@ -125,7 +125,7 @@ paths:
               properties:
                 schema-id:
                   type: string
-                  description: The ID of the CSV Schema to use for valdidation
+                  description: The ID of the CSV Schema to use for validation
                   examples:
                     - "bbl-global-schema-1.2.0"
                 url:
@@ -231,44 +231,48 @@ components:
     ValidationResult:
       type: object
       required:
-        - executionTime
-        - passed
+        - executionTimeMs
+        - valid
+        - utf8Valid
       properties:
-        executionTime:
-          type: number
-          format: double
+        executionTimeMs:
+          type: integer
+          format: int64
           description: Time taken to execute validation (in milliseconds)
           examples:
-            - 243.5
-        passed:
+            - 243
+        valid:
           type: boolean
-          description: True if the Boradband Label file validated against the Schema, false otherwise
-        failures:
+          description: True if the Broadband Label file validated against the Schema, false otherwise
+        utf8Valid:
+          type: boolean
+          description: True if the CSV file is valid UTF-8 encoded
+        errors:
           type: array
-          description: Details of validation failures (only present if passed is false)
+          description: Details of validation errors
           items:
-            $ref: '#/components/schemas/ValidationFailure'
+            $ref: '#/components/schemas/ValidationError'
             
-    ValidationFailure:
+    ValidationError:
       type: object
       required:
-        - line
-        - column
+        - lineNumber
+        - columnIndex
         - message
       properties:
-        line:
+        lineNumber:
           type: integer
-          description: Line number where a validation failure occurred
+          description: Line number where a validation error occurred
           examples:
             - 42
-        column:
-          type: string
-          description: Column name where a validation failure occurred
+        columnIndex:
+          type: integer
+          description: Column index where a validation error occurred
           examples:
-            - "email"
+            - 3
         message:
           type: string
-          description: Description of the validation failure
+          description: Description of the validation error
           examples:
             - "Invalid email format"
           
@@ -281,8 +285,11 @@ components:
         code:
           type: string
           enum:
-            - NO_SUCH_RESOURCE
+            - SCHEMA_NOT_FOUND
             - UNEXPECTED_ERROR
+            - NO_CSV
+            - NON_RESOLVABLE_URL
+            - VALIDATION_ERROR
           description: An identifier that indicates the specific error
         description:
           type: string
@@ -312,7 +319,7 @@ components:
             $ref: '#/components/schemas/ErrorResponse'
                 
     InternalServerError:
-      description: Server procuded an unexpected error during processing
+      description: Server produced an unexpected error during processing
       headers:
         X-BBLVALIDATOR-VERSION:
           $ref: '#/components/headers/XBBLValidatorVersion'
