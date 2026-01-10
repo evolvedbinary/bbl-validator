@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,11 +74,13 @@ public class ValidationViewController {
 
         try {
             final Path tempFile = isUrl ? fileDownloadService.downloadToTemp(csvUrl) : fileDownloadService.saveContentToTemp(csvContent);
-            final CsvValidationService.ValidationResult result = csvValidationService.validateCsvFile(tempFile, schemaId);
-
-            model.put("result", new ValidationResponse(result.isValid(), result.getErrors(), result.getExecutionTimeMs(), result.isUtf8Valid()));
-            model.put("errorsTable", getErrorsTable(result.getErrors()));
-
+            try {
+                final CsvValidationService.ValidationResult result = csvValidationService.validateCsvFile(tempFile, schemaId);
+                model.put("result", new ValidationResponse(result.isValid(), result.getErrors(), result.getExecutionTimeMs(), result.isUtf8Valid()));
+                model.put("errorsTable", getErrorsTable(result.getErrors()));
+            } finally {
+                Files.delete(tempFile);
+            }
         } catch (final IOException e) {
             model.put("error", new ErrorResponse(ErrorResponse.Code.UNEXPECTED_ERROR, "Internal error processing CSV: " + e.getMessage()));
         }
