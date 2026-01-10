@@ -11,9 +11,9 @@ micronaut:
         enabled: true
         mapping: "/mock-data/**"
         paths:
-          - "classpath:schemas"
+          - "classpath:mock-data"
           - "classpath:static"
 api:
   version: ${project.version}
 schema:
-  directory: ${project.build.testOutputDirectory}/schemas
+  directory: ${project.build.testOutputDirectory}/mock-data
