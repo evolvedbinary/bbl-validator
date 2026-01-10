@@ -29,33 +29,37 @@ public class FileDownloadService {
 
     private final PoolingHttpClientConnectionManager poolingHttpClientConnectionManager;
     private final RequestConfig httpRequestConfig;
-    private final CloseableHttpClient httpClient;
 
     private final Path sharedTempDir;
     private final RandomBasedGenerator generator = Generators.randomBasedGenerator();
 
     public FileDownloadService() {
         this.poolingHttpClientConnectionManager = new PoolingHttpClientConnectionManager();
+        this.poolingHttpClientConnectionManager.setMaxTotal(20);
+        this.poolingHttpClientConnectionManager.setDefaultMaxPerRoute(15);
+        this.poolingHttpClientConnectionManager.setValidateAfterInactivity(15_000);
 
         this.httpRequestConfig = RequestConfig.custom()
-        .setConnectTimeout(10_000)
-        .setSocketTimeout(10_000)
-        .setConnectionRequestTimeout(3_000)
-        .build();
-
-        this.httpClient = HttpClients
-                .custom()
-                .setConnectionManager(poolingHttpClientConnectionManager)
-                .setDefaultRequestConfig(httpRequestConfig)
-                .evictIdleConnections(30, TimeUnit.SECONDS)
-                .evictExpiredConnections()
-                .build();
+            .setConnectTimeout(10_000)
+            .setSocketTimeout(10_000)
+            .setConnectionRequestTimeout(3_000)
+            .build();
 
         try {
             this.sharedTempDir = Files.createTempDirectory(TEMP_DIR_NAME);
         } catch (final IOException e) {
             throw new IllegalStateException("Failed to create or access persistent temp directory", e);
         }
+    }
+
+    private CloseableHttpClient buildHttpClient() {
+        return HttpClients
+                .custom()
+                .setConnectionManager(poolingHttpClientConnectionManager)
+                .setDefaultRequestConfig(httpRequestConfig)
+                .evictIdleConnections(30, TimeUnit.SECONDS)
+                .evictExpiredConnections()
+                .build();
     }
 
     /**
@@ -72,7 +76,7 @@ public class FileDownloadService {
 
             final HttpGet httpGet = new HttpGet(url);
 
-            try (final CloseableHttpResponse response = httpClient.execute(httpGet)) {
+            try (final CloseableHttpResponse response = buildHttpClient().execute(httpGet)) {
                 
                 final int statusCode = response.getStatusLine().getStatusCode();
                 if (statusCode != HttpStatus.SC_OK) {
