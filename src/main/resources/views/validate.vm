@@ -10,6 +10,7 @@
 <body>
     <div class="container">
         <h1>BBL Validator</h1>
+        <h4>API documentation: <a href="/static/openapi.yaml">OpenAPI YAML</a> Or <a href="https://app.swaggerhub.com/apis/evolvedbinary/bbl-validator-web-api/1.0.0">Swagger UI</a></h4>
         <form id="validateForm" action="/views/validate" method="POST">
             <div class="form-group">
                 <label for="schemaId">Schema ID</label>
