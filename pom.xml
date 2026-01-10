@@ -240,6 +240,36 @@
                     <shared>true</shared>
                 </configuration>
             </plugin>
+
+             <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.46.0</version>
+                <configuration>    
+                    <verbose>true</verbose>
+                    <images>
+                        <image>
+                            <name>evolvedbinary/bbl-validator:%v</name>
+                            <alias>evolvedbinary/bbl-validator</alias>
+                            <build>
+                                <dockerFile>${project.build.outputDirectory}/Dockerfile</dockerFile>
+                                <assembly>
+                                    <descriptorRef>artifact</descriptorRef>
+                                </assembly>
+                            </build>
+                        </image>
+                    </images>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>default</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>

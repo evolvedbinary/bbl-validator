@@ -1,32 +1,26 @@
-# Builder stage
-FROM maven:3.9-eclipse-temurin-21-alpine AS builder
-WORKDIR /app
-
-COPY pom.xml .
-
-# Copy source code
-COPY src ./src
-
-# Build
-RUN mvn clean package -DskipTests -B
-
-# Runtime stage
+# Use Eclipse Temurin JRE as base image
 FROM eclipse-temurin:21-jre-alpine
 
 # metadata
-LABEL maintainer="Evolved Binary <https://www.evolvedbinary.com>"
-LABEL description="BBL Validator"
-LABEL version="1.0.0-SNAPSHOT"
-
+LABEL org.label-schema.build-date=${maven.build.timestamp} \
+      org.label-schema.description="BBL Validator" \
+      org.label-schema.name="bbl-validator" \
+      org.label-schema.url="${project.url}" \
+      org.label-schema.vcs-ref=${build-commit-abbrev} \
+      org.label-schema.vcs-url="${project.scm.url}" \
+      org.label-schema.vendor="Evolved Binary"
+      
 # Create a non-root user for running the application
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 # Set working directory
 WORKDIR /app
 
-# Copy the built JAR from the build stage
-COPY --from=builder /app/target/bbl-validator-1.0.0-SNAPSHOT.jar /app/app.jar
+# Copy the JAR file from Maven assembly
+# The docker-maven-plugin with assembly descriptor 'artifact' places the JAR in maven/
+COPY maven/*.jar /app/app.jar
 
+# Copy schemas directory
 COPY src/main/resources/schemas ./schemas
 
 # Change ownership to non-root user
