@@ -41,7 +41,7 @@ public class SchemaController {
         final String schema = schemaService.getSchema(schemaId);
         if (schema == null) {
             return HttpResponse
-                    .badRequest()
+                    .notFound()
                     .contentType(MediaType.APPLICATION_JSON_TYPE)
                     .body(new ErrorResponse(ErrorResponse.Code.SCHEMA_NOT_FOUND,"Schema not found with ID: " + schemaId));
         }

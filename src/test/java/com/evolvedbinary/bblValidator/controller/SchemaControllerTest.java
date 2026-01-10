@@ -109,7 +109,7 @@ public class SchemaControllerTest {
         final HttpClientResponseException exception = assertThrows(HttpClientResponseException.class, () -> client.toBlocking().exchange(request, String.class));
 
         // assert the response status
-        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
 
         // assert the X-BBLVALIDATOR-VERSION is present and it's returning the expected value.
         assertEquals(version, exception.getResponse().getHeaders().get(BBLVALIDATOR_VERSION_HEADER));
