@@ -40,7 +40,7 @@ public class ValidationViewController {
     @View("validate")
     @Get("/validate")
     public Map<String, Object> validate() {
-        Map<String, Object> model = new HashMap<>(); 
+        final Map<String, Object> model = new HashMap<>(); 
         model.put("version", version);
         model.put("schemas", schemaService.listSchemas());
         model.put("csvSource", "url");
@@ -49,13 +49,13 @@ public class ValidationViewController {
 
     @View("validate")
     @Post(value = "/validate", consumes = MediaType.APPLICATION_FORM_URLENCODED)
-    public Map<String, Object> validateSubmit(@Body Map<String, String> formData) {
-        String schemaId = formData.get("schemaId");
-        String csvSource = formData.get("csvSource");
-        String csvUrl = formData.get("csvUrl");
-        String csvContent = formData.get("csvContent");
+    public Map<String, Object> validateSubmit(@Body final Map<String, String> formData) {
+        final String schemaId = formData.get("schemaId");
+        final String csvSource = formData.get("csvSource");
+        final String csvUrl = formData.get("csvUrl");
+        final String csvContent = formData.get("csvContent");
 
-        Map<String, Object> model = new HashMap<>();
+        final Map<String, Object> model = new HashMap<>();
         model.put("version", version);
         model.put("schemas", schemaService.listSchemas());
         model.put("schemaId", schemaId);
@@ -69,25 +69,25 @@ public class ValidationViewController {
             return model;
         }
 
-        boolean isUrl = csvSource.equals("url");
+        final boolean isUrl = csvSource.equals("url");
 
         try {
-            Path tempFile = isUrl ? fileDownloadService.downloadToTemp(csvUrl) : fileDownloadService.saveContentToTemp(csvContent);
-            CsvValidationService.ValidationResult result = csvValidationService.validateCsvFile(tempFile, schemaId);
+            final Path tempFile = isUrl ? fileDownloadService.downloadToTemp(csvUrl) : fileDownloadService.saveContentToTemp(csvContent);
+            final CsvValidationService.ValidationResult result = csvValidationService.validateCsvFile(tempFile, schemaId);
 
             model.put("result", new ValidationResponse(result.isValid(), result.getErrors(), result.getExecutionTimeMs(), result.isUtf8Valid()));
             model.put("errorsTable", getErrorsTable(result.getErrors()));
 
-        } catch (IOException e) {
+        } catch (final IOException e) {
             model.put("error", new ErrorResponse(ErrorResponse.Code.UNEXPECTED_ERROR, "Internal error processing CSV: " + e.getMessage()));
         }
 
         return model;
     }
 
-    private List<String> getErrorsTable(List<ValidationError> errors) {
-        List<String> table = new ArrayList<>();
-        for (ValidationError error : errors) {
+    private List<String> getErrorsTable(final List<ValidationError> errors) {
+        final List<String> table = new ArrayList<>();
+        for (final ValidationError error : errors) {
             table.add(error.getMessage());
         }
         return table;

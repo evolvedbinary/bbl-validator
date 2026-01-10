@@ -72,14 +72,14 @@ public class FileDownloadService {
 
             final HttpGet httpGet = new HttpGet(url);
 
-            try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
+            try (final CloseableHttpResponse response = httpClient.execute(httpGet)) {
                 
-                int statusCode = response.getStatusLine().getStatusCode();
+                final int statusCode = response.getStatusLine().getStatusCode();
                 if (statusCode != HttpStatus.SC_OK) {
                     throw new IOException("Non Resolvable url: " + url);
                 }
 
-                try (InputStream inputStream = response.getEntity().getContent()) {
+                try (final InputStream inputStream = response.getEntity().getContent()) {
                     Files.copy(inputStream, tempFile, StandardCopyOption.REPLACE_EXISTING);
                 }
             }

@@ -83,7 +83,7 @@ public class SchemaService {
     }
 
     private void loadSchemasFromFileSystem(final Path schemaPath) {
-        try (Stream<Path> paths = Files.walk(schemaPath, 1)) {
+        try (final Stream<Path> paths = Files.walk(schemaPath, 1)) {
             paths.filter(path -> path.toString().endsWith(".json"))
                     .forEach(path -> {
                         try {

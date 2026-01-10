@@ -41,7 +41,7 @@ public class CsvValidationService {
                 enforceCaseSensitivePathChecks, trace, null, skipFileChecks, -1);
 
         final long startTime = System.currentTimeMillis();
-        CsvValidatorJavaBridge.ValidationResult result = CsvValidatorJavaBridge.validate(validationRequest);
+        final CsvValidatorJavaBridge.ValidationResult result = CsvValidatorJavaBridge.validate(validationRequest);
         final List<FailMessage> errors = result.errors();
         final long executionTime = System.currentTimeMillis() - startTime;
         return processValidationMessages(errors, executionTime);
