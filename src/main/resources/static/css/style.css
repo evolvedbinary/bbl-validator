@@ -1,0 +1,42 @@
+input[type="radio"]:not(:checked)~input,
+input[type="radio"]:not(:checked)~textarea {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+input[type="radio"]:checked~input,
+input[type="radio"]:checked~textarea {
+    border: 2px solid #ccc;
+    opacity: 1;
+}
+
+input[type="url"] {
+    width: 100%;
+    padding: 8px;
+}
+
+textarea {
+    width: 100%;
+    padding: 8px;
+    height: 200px;
+}
+
+table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+table td {
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    padding: 8px;
+    vertical-align: top;
+}
+
+table th:first-child {
+    width: 100px;
+    white-space: nowrap;
+    text-align: center;
+}
