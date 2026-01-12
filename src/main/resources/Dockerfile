@@ -2,12 +2,8 @@
 FROM eclipse-temurin:21-jre-alpine
 
 # metadata
-LABEL org.label-schema.build-date=${maven.build.timestamp} \
-      org.label-schema.description="BBL Validator" \
+LABEL org.label-schema.description="BBL Validator" \
       org.label-schema.name="bbl-validator" \
-      org.label-schema.url="${project.url}" \
-      org.label-schema.vcs-ref=${build-commit-abbrev} \
-      org.label-schema.vcs-url="${project.scm.url}" \
       org.label-schema.vendor="Evolved Binary"
       
 # Create a non-root user for running the application
@@ -16,12 +12,9 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 # Set working directory
 WORKDIR /app
 
-# Copy the JAR file from Maven assembly
-# The docker-maven-plugin with assembly descriptor 'artifact' places the JAR in maven/
-COPY maven/*.jar /app/app.jar
-
-# Copy schemas directory
-COPY src/main/resources/schemas ./schemas
+# Copy the JAR file and schemas from build
+COPY maven/bbl-validator-${project.version}.jar /app/app.jar
+COPY maven/schemas /app/schemas
 
 # Change ownership to non-root user
 RUN chown -R appuser:appgroup /app

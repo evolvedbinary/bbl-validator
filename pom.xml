@@ -254,7 +254,24 @@
                             <build>
                                 <dockerFile>${project.build.outputDirectory}/Dockerfile</dockerFile>
                                 <assembly>
-                                    <descriptorRef>artifact</descriptorRef>
+                                    <mode>dir</mode>
+                                    <inline>
+                                        <files>
+                                            <file>
+                                                <source>${project.build.directory}/${project.build.finalName}.jar</source>
+                                                <destName>bbl-validator-${project.version}.jar</destName>
+                                            </file>
+                                        </files>
+                                        <fileSets>
+                                            <fileSet>
+                                                <directory>${project.basedir}/src/main/resources/schemas</directory>
+                                                <outputDirectory>schemas</outputDirectory>
+                                                <includes>
+                                                    <include>**/*</include>
+                                                </includes>
+                                            </fileSet>
+                                        </fileSets>
+                                    </inline>
                                 </assembly>
                             </build>
                         </image>
