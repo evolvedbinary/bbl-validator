@@ -44,11 +44,11 @@
         <div id="result">
             #if($result)
                 <h3>Validation Result</h3>
-                <p>Status: <strong>#if($result.valid) Valid #else Invalid #end</strong></p>
+                <p>Status: <strong>#if($result.passed) Valid #else Invalid #end</strong></p>
                 #if(!$result.utf8Valid)
                     <p><strong>The file is not valid UTF-8</strong></p>
                 #end
-                <p>Execution Time: $result.executionTimeMs ms</p>
+                <p>Execution Time: $result.executionTime ms</p>
             #end
 
             #if($errorsTable)
