@@ -14,9 +14,9 @@ WORKDIR /app
 
 # Copy the JAR file and schemas from build
 COPY maven/bbl-validator-${project.version}.jar /app/app.jar
-COPY maven/schemas /app/schemas
 
 # Change ownership to non-root user
+RUN mkdir /app/schemas
 RUN chown -R appuser:appgroup /app
 
 # Switch to non-root user

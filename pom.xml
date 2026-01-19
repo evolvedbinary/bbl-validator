@@ -240,17 +240,15 @@
                     <shared>true</shared>
                 </configuration>
             </plugin>
-
-             <plugin>
+            <plugin>
                 <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>0.46.0</version>
-                <configuration>    
+                <configuration>
                     <verbose>true</verbose>
                     <images>
                         <image>
                             <name>evolvedbinary/bbl-validator:%v</name>
-                            <alias>evolvedbinary/bbl-validator</alias>
                             <build>
                                 <dockerFile>${project.build.outputDirectory}/Dockerfile</dockerFile>
                                 <assembly>
@@ -262,16 +260,7 @@
                                                 <destName>bbl-validator-${project.version}.jar</destName>
                                             </file>
                                         </files>
-                                        <fileSets>
-                                            <fileSet>
-                                                <directory>${project.basedir}/src/main/resources/schemas</directory>
-                                                <outputDirectory>schemas</outputDirectory>
-                                                <includes>
-                                                    <include>**/*</include>
-                                                </includes>
-                                            </fileSet>
-                                        </fileSets>
-                                    </inline>
+                                        </inline>
                                 </assembly>
                             </build>
                         </image>
