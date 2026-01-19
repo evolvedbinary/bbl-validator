@@ -77,18 +77,18 @@ public class ValidateController {
         if (csvContent == null || csvContent.isEmpty()) {
             return HttpResponse.badRequest().body(new ErrorResponse(ErrorResponse.Code.NO_CSV,"Empty CSV content"));
         }
-        try {
-            final Path tempFile = fileDownloadService.saveContentToTemp(csvContent);
             try {
-                LOG.trace("CSV content saved to: {}", tempFile);
-                return HttpResponse.ok(performValidation(tempFile, schemaId));
-            } finally {
-                Files.delete(tempFile);
+                final Path tempFile = fileDownloadService.saveContentToTemp(csvContent);
+                try {
+                    LOG.trace("CSV content saved to: {}", tempFile);
+                    return HttpResponse.ok(performValidation(tempFile, schemaId));
+                } finally {
+                    Files.delete(tempFile);
+                }
+            } catch (final IOException e) {
+                LOG.error("Failed to save CSV content to temp file", e);
+                return HttpResponse.serverError().body(new ErrorResponse(ErrorResponse.Code.UNEXPECTED_ERROR,"Unable to store CSV: " + e.getMessage()));
             }
-        } catch (final IOException e) {
-            LOG.error("Failed to save CSV content to temp file", e);
-            return HttpResponse.serverError().body(new ErrorResponse(ErrorResponse.Code.UNEXPECTED_ERROR,"Unable to store CSV: " + e.getMessage()));
-        }
     }
 
     /**
@@ -122,6 +122,6 @@ public class ValidateController {
     private ResponseObject performValidation(final Path csvFile, final String schemaId) {
         final CsvValidationService.ValidationResult result = csvValidationService.validateCsvFile(csvFile, schemaId);
 
-        return new ValidationResponse(result.isValid(), result.getErrors(), result.getExecutionTimeMs(), result.isUtf8Valid());
+        return new ValidationResponse(result.isPassed(), result.getFailures(), result.getExecutionTime(), result.isUtf8Valid());
     }
 }

@@ -1,7 +1,7 @@
 package com.evolvedbinary.bblValidator.controller;
 
 import com.evolvedbinary.bblValidator.dto.ErrorResponse;
-import com.evolvedbinary.bblValidator.dto.ValidationError;
+import com.evolvedbinary.bblValidator.dto.ValidationFailure;
 import com.evolvedbinary.bblValidator.dto.ValidationResponse;
 import com.evolvedbinary.bblValidator.service.CsvValidationService;
 import com.evolvedbinary.bblValidator.service.FileDownloadService;
@@ -76,8 +76,8 @@ public class ValidationViewController {
             final Path tempFile = isUrl ? fileDownloadService.downloadToTemp(csvUrl) : fileDownloadService.saveContentToTemp(csvContent);
             try {
                 final CsvValidationService.ValidationResult result = csvValidationService.validateCsvFile(tempFile, schemaId);
-                model.put("result", new ValidationResponse(result.isValid(), result.getErrors(), result.getExecutionTimeMs(), result.isUtf8Valid()));
-                model.put("errorsTable", getErrorsTable(result.getErrors()));
+                model.put("result", new ValidationResponse(result.isPassed(), result.getFailures(), result.getExecutionTime(), result.isUtf8Valid()));
+                model.put("errorsTable", getErrorsTable(result.getFailures()));
             } finally {
                 Files.delete(tempFile);
             }
@@ -88,10 +88,10 @@ public class ValidationViewController {
         return model;
     }
 
-    private List<String> getErrorsTable(final List<ValidationError> errors) {
+    private List<String> getErrorsTable(final List<ValidationFailure> failures) {
         final List<String> table = new ArrayList<>();
-        for (final ValidationError error : errors) {
-            table.add(error.getMessage());
+        for (final ValidationFailure failure : failures) {
+            table.add(failure.getMessage());
         }
         return table;
     }

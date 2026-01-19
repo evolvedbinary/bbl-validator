@@ -60,10 +60,10 @@ public class ValidateControllerTest {
 
         final ValidationResponse validationResponse = response.getBody().get();
         
-        assertTrue(validationResponse.isValid());
+        assertTrue(validationResponse.isPassed());
         assertTrue(validationResponse.isUtf8Valid());
-        assertTrue(validationResponse.getErrors().isEmpty());
-        assertTrue(validationResponse.getExecutionTimeMs() > -1);
+        assertTrue(validationResponse.getFailures().isEmpty());
+        assertTrue(validationResponse.getExecutionTime() > -1);
     }
 
     @Test
@@ -85,24 +85,24 @@ public class ValidateControllerTest {
 
         final ValidationResponse validationResponse = response.getBody().get();
         
-        assertFalse(validationResponse.isValid());
+        assertFalse(validationResponse.isPassed());
         assertTrue(validationResponse.isUtf8Valid());
-        assertFalse(validationResponse.getErrors().isEmpty());
+        assertFalse(validationResponse.getFailures().isEmpty());
 
-        validationResponse.getErrors().forEach(error -> {
+        validationResponse.getFailures().forEach(error -> {
             assertNotNull(error.getMessage());
             assertFalse(error.getMessage().isEmpty());
-            assertTrue(error.getLineNumber() > 0);
-            assertTrue(error.getColumnIndex() >= 0);
+            assertTrue(error.getLine() > 0);
+            assertTrue(error.getColumn() >= 0);
         });
         
         final String errorMessage = "is(concat($c1, $c2)) fails for row: 3, column: c3, value: \"ccccc\"";
 
-        assertEquals(errorMessage, validationResponse.getErrors().getFirst().getMessage());
-        assertEquals(3, validationResponse.getErrors().getFirst().getLineNumber());
-        assertEquals(3, validationResponse.getErrors().getFirst().getColumnIndex());
+        assertEquals(errorMessage, validationResponse.getFailures().getFirst().getMessage());
+        assertEquals(3, validationResponse.getFailures().getFirst().getLine());
+        assertEquals(3, validationResponse.getFailures().getFirst().getColumn());
         
-        assertTrue(validationResponse.getExecutionTimeMs() > -1);
+        assertTrue(validationResponse.getExecutionTime() > -1);
     }
 
     @Test
@@ -184,10 +184,10 @@ public class ValidateControllerTest {
 
         final ValidationResponse validationResponse = response.getBody().get();
 
-        assertTrue(validationResponse.isValid());
+        assertTrue(validationResponse.isPassed());
         assertTrue(validationResponse.isUtf8Valid());
-        assertTrue(validationResponse.getErrors().isEmpty());
-        assertTrue(validationResponse.getExecutionTimeMs() > -1);
+        assertTrue(validationResponse.getFailures().isEmpty());
+        assertTrue(validationResponse.getExecutionTime() > -1);
 
     }
 
@@ -213,24 +213,24 @@ public class ValidateControllerTest {
 
         final ValidationResponse validationResponse = response.getBody().get();
         
-        assertFalse(validationResponse.isValid());
+        assertFalse(validationResponse.isPassed());
         assertTrue(validationResponse.isUtf8Valid());
-        assertFalse(validationResponse.getErrors().isEmpty());
+        assertFalse(validationResponse.getFailures().isEmpty());
 
-        validationResponse.getErrors().forEach(error -> {
+        validationResponse.getFailures().forEach(error -> {
             assertNotNull(error.getMessage());
             assertFalse(error.getMessage().isEmpty());
-            assertTrue(error.getLineNumber() > 0);
-            assertTrue(error.getColumnIndex() >= 0);
+            assertTrue(error.getLine() > 0);
+            assertTrue(error.getColumn() >= 0);
         });
         
         final String errorMessage = "is(concat($c1, $c2)) fails for row: 3, column: c3, value: \"ccccc\"";
 
-        assertEquals(errorMessage, validationResponse.getErrors().getFirst().getMessage());
-        assertEquals(3, validationResponse.getErrors().getFirst().getLineNumber());
-        assertEquals(3, validationResponse.getErrors().getFirst().getColumnIndex());
+        assertEquals(errorMessage, validationResponse.getFailures().getFirst().getMessage());
+        assertEquals(3, validationResponse.getFailures().getFirst().getLine());
+        assertEquals(3, validationResponse.getFailures().getFirst().getColumn());
         
-        assertTrue(validationResponse.getExecutionTimeMs() > -1);
+        assertTrue(validationResponse.getExecutionTime() > -1);
         
     }
 
@@ -254,10 +254,10 @@ public class ValidateControllerTest {
 
         final ValidationResponse validationResponse = response.getBody().get();
 
-        assertTrue(validationResponse.isValid());
+        assertTrue(validationResponse.isPassed());
         assertTrue(validationResponse.isUtf8Valid());
-        assertTrue(validationResponse.getErrors().isEmpty());
-        assertTrue(validationResponse.getExecutionTimeMs() > -1);
+        assertTrue(validationResponse.getFailures().isEmpty());
+        assertTrue(validationResponse.getExecutionTime() > -1);
     }
 
     @Test
@@ -279,24 +279,24 @@ public class ValidateControllerTest {
 
         final ValidationResponse validationResponse = response.getBody().get();
         
-        assertFalse(validationResponse.isValid());
+        assertFalse(validationResponse.isPassed());
         assertTrue(validationResponse.isUtf8Valid());
-        assertFalse(validationResponse.getErrors().isEmpty());
+        assertFalse(validationResponse.getFailures().isEmpty());
 
-        validationResponse.getErrors().forEach(error -> {
+        validationResponse.getFailures().forEach(error -> {
             assertNotNull(error.getMessage());
             assertFalse(error.getMessage().isEmpty());
-            assertTrue(error.getLineNumber() > 0);
-            assertTrue(error.getColumnIndex() >= 0);
+            assertTrue(error.getLine() > 0);
+            assertTrue(error.getColumn() >= 0);
         });
         
         final String errorMessage = "is(concat($c1, $c2)) fails for row: 3, column: c3, value: \"ccccc\"";
 
-        assertEquals(errorMessage, validationResponse.getErrors().getFirst().getMessage());
-        assertEquals(3, validationResponse.getErrors().getFirst().getLineNumber());
-        assertEquals(3, validationResponse.getErrors().getFirst().getColumnIndex());
+        assertEquals(errorMessage, validationResponse.getFailures().getFirst().getMessage());
+        assertEquals(3, validationResponse.getFailures().getFirst().getLine());
+        assertEquals(3, validationResponse.getFailures().getFirst().getColumn());
         
-        assertTrue(validationResponse.getExecutionTimeMs() > -1);
+        assertTrue(validationResponse.getExecutionTime() > -1);
 
     }
 
@@ -382,11 +382,11 @@ public class ValidateControllerTest {
 
         final ValidationResponse validationResponse = response.getBody().get();
         
-        assertFalse(validationResponse.isValid());
+        assertFalse(validationResponse.isPassed());
         assertFalse(validationResponse.isUtf8Valid());
-        assertFalse(validationResponse.getErrors().isEmpty());
+        assertFalse(validationResponse.getFailures().isEmpty());
 
-        assertTrue(validationResponse.getExecutionTimeMs() > -1);
+        assertTrue(validationResponse.getExecutionTime() > -1);
 
     }
 
@@ -466,11 +466,11 @@ public class ValidateControllerTest {
 
         final ValidationResponse validationResponse = response.getBody().get();
 
-        assertFalse(validationResponse.isValid());
+        assertFalse(validationResponse.isPassed());
         assertFalse(validationResponse.isUtf8Valid());
-        assertFalse(validationResponse.getErrors().isEmpty());
+        assertFalse(validationResponse.getFailures().isEmpty());
 
-        assertTrue(validationResponse.getExecutionTimeMs() > -1);
+        assertTrue(validationResponse.getExecutionTime() > -1);
     }
 
 }

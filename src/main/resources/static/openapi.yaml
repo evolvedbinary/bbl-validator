@@ -14,7 +14,7 @@ tags:
   - name: version
     description: API version information
   - name: schema
-    description: CSV schema management and validation
+    description: Broadband Label file schema management and validation
 
 servers:
   - description: BBL Validator
@@ -45,9 +45,9 @@ paths:
     get:
       tags:
         - schema
-      summary: List available CSV Schemas
+      summary: List available Broadband Label file Schemas
       operationId: listSchemas
-      description: Returns details of all of the available CSV schema variants and versions
+      description: Returns details of all of the available Broadband Label file schema variants and versions
       responses:
         '200':
           description: The list of available schemas and their details
@@ -65,14 +65,14 @@ paths:
     get:
       tags:
         - schema
-      summary: Retrieve a CSV Schema
+      summary: Retrieve a Broadband Label file Schema
       operationId: getSchema
-      description: Returns the requested CSV Schema
+      description: Returns the requested Broadband Label file Schema
       parameters:
         - $ref: '#/components/parameters/SchemaId'
       responses:
         '200':
-          description: The CSV schema
+          description: The Broadband Label file schema
           headers:
             X-BBLVALIDATOR-VERSION:
               $ref: '#/components/headers/XBBLValidatorVersion'
@@ -80,9 +80,9 @@ paths:
              text/csv-schema:
               schema:
                 type: string
-                description: The CSV Schema
-        '400':
-          $ref: '#/components/responses/BadRequest'
+                description: The Broadband Label file schema
+        '404':
+          $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
           
@@ -231,41 +231,41 @@ components:
     ValidationResult:
       type: object
       required:
-        - executionTimeMs
-        - valid
+        - executionTime
+        - passed
         - utf8Valid
       properties:
-        executionTimeMs:
-          type: integer
-          format: int64
+        executionTime:
+          type: number
+          format: double
           description: Time taken to execute validation (in milliseconds)
           examples:
-            - 243
-        valid:
+            - 243.5
+        passed:
           type: boolean
           description: True if the Broadband Label file validated against the Schema, false otherwise
         utf8Valid:
           type: boolean
-          description: True if the CSV file is valid UTF-8 encoded
-        errors:
+          description: True if the Broadband Label file is valid UTF-8 encoded
+        failures:
           type: array
-          description: Details of validation errors
+          description: Details of validation failures (only present if passed is false)
           items:
-            $ref: '#/components/schemas/ValidationError'
+            $ref: '#/components/schemas/ValidationFailure'
             
-    ValidationError:
+    ValidationFailure:
       type: object
       required:
-        - lineNumber
-        - columnIndex
+        - line
+        - column
         - message
       properties:
-        lineNumber:
+        line:
           type: integer
           description: Line number where a validation error occurred
           examples:
             - 42
-        columnIndex:
+        column:
           type: integer
           description: Column index where a validation error occurred
           examples:
@@ -319,7 +319,7 @@ components:
             $ref: '#/components/schemas/ErrorResponse'
                 
     InternalServerError:
-      description: Server produced an unexpected error during processing
+      description: Server procuded an unexpected error during processing
       headers:
         X-BBLVALIDATOR-VERSION:
           $ref: '#/components/headers/XBBLValidatorVersion'
