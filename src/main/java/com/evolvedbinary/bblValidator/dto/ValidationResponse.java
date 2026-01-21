@@ -11,28 +11,33 @@ import java.util.List;
 @Serdeable
 public final class ValidationResponse implements ResponseObject {
 
-    private final boolean valid;
-    private final List<ValidationError> errors;
-    private final long executionTimeMs;
+    private final boolean passed;
+    private final List<ValidationFailure> failures;
+    private final long executionTime;
+    private final boolean utf8Valid;
 
-    public ValidationResponse(final boolean valid,
-                              final List<ValidationError> errors,
-                              final long executionTimeMs) {
-        this.executionTimeMs = executionTimeMs;
-        this.valid = valid;
-        this.errors = errors != null ? errors : Collections.emptyList();
+    public ValidationResponse(final boolean passed,
+                              final List<ValidationFailure> failures,
+                              final long executionTime,
+                              final boolean utf8Valid) {
+        this.executionTime = executionTime;
+        this.passed = passed;
+        this.failures = failures != null ? failures : Collections.emptyList();
+        this.utf8Valid = utf8Valid;
     }
 
-    public boolean isValid() {
-        return valid;
+    public boolean isPassed() {
+        return passed;
+    }   
+
+    public List<ValidationFailure> getFailures() {
+        return failures;
     }
 
-    public List<ValidationError> getErrors() {
-        return errors;
+    public long getExecutionTime() {
+        return executionTime;
     }
 
-    public long getExecutionTimeMs() {
-        return executionTimeMs;
-    }
+    public boolean isUtf8Valid() { return utf8Valid; }
 
 }

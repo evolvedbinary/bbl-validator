@@ -3,6 +3,12 @@ micronaut:
     name: bbl-validator
   server:
     port: 8080
+  router:
+    static-resources:
+      default:
+        enabled: true
+        mapping: "/static/**"
+        paths: classpath:static
 api:
   version: ${project.version}
 schema:

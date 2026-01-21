@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
 
 @MicronautTest
 public class ValidateControllerTest {
@@ -61,9 +60,10 @@ public class ValidateControllerTest {
 
         final ValidationResponse validationResponse = response.getBody().get();
         
-        assertTrue(validationResponse.isValid());
-        assertTrue(validationResponse.getErrors().isEmpty());
-        assertTrue(validationResponse.getExecutionTimeMs() > -1);
+        assertTrue(validationResponse.isPassed());
+        assertTrue(validationResponse.isUtf8Valid());
+        assertTrue(validationResponse.getFailures().isEmpty());
+        assertTrue(validationResponse.getExecutionTime() > -1);
     }
 
     @Test
@@ -85,23 +85,24 @@ public class ValidateControllerTest {
 
         final ValidationResponse validationResponse = response.getBody().get();
         
-        assertFalse(validationResponse.isValid());
-        assertFalse(validationResponse.getErrors().isEmpty());
+        assertFalse(validationResponse.isPassed());
+        assertTrue(validationResponse.isUtf8Valid());
+        assertFalse(validationResponse.getFailures().isEmpty());
 
-        validationResponse.getErrors().forEach(error -> {
+        validationResponse.getFailures().forEach(error -> {
             assertNotNull(error.getMessage());
             assertFalse(error.getMessage().isEmpty());
-            assertTrue(error.getLineNumber() > 0);
-            assertTrue(error.getColumnIndex() >= 0);
+            assertTrue(error.getLine() > 0);
+            assertTrue(error.getColumn() >= 0);
         });
         
         final String errorMessage = "is(concat($c1, $c2)) fails for row: 3, column: c3, value: \"ccccc\"";
 
-        assertEquals(errorMessage, validationResponse.getErrors().getFirst().getMessage());
-        assertEquals(3, validationResponse.getErrors().getFirst().getLineNumber());
-        assertEquals(3, validationResponse.getErrors().getFirst().getColumnIndex());
+        assertEquals(errorMessage, validationResponse.getFailures().getFirst().getMessage());
+        assertEquals(3, validationResponse.getFailures().getFirst().getLine());
+        assertEquals(3, validationResponse.getFailures().getFirst().getColumn());
         
-        assertTrue(validationResponse.getExecutionTimeMs() > -1);
+        assertTrue(validationResponse.getExecutionTime() > -1);
     }
 
     @Test
@@ -183,9 +184,10 @@ public class ValidateControllerTest {
 
         final ValidationResponse validationResponse = response.getBody().get();
 
-        assertTrue(validationResponse.isValid());
-        assertTrue(validationResponse.getErrors().isEmpty());
-        assertTrue(validationResponse.getExecutionTimeMs() > -1);
+        assertTrue(validationResponse.isPassed());
+        assertTrue(validationResponse.isUtf8Valid());
+        assertTrue(validationResponse.getFailures().isEmpty());
+        assertTrue(validationResponse.getExecutionTime() > -1);
 
     }
 
@@ -211,23 +213,24 @@ public class ValidateControllerTest {
 
         final ValidationResponse validationResponse = response.getBody().get();
         
-        assertFalse(validationResponse.isValid());
-        assertFalse(validationResponse.getErrors().isEmpty());
+        assertFalse(validationResponse.isPassed());
+        assertTrue(validationResponse.isUtf8Valid());
+        assertFalse(validationResponse.getFailures().isEmpty());
 
-        validationResponse.getErrors().forEach(error -> {
+        validationResponse.getFailures().forEach(error -> {
             assertNotNull(error.getMessage());
             assertFalse(error.getMessage().isEmpty());
-            assertTrue(error.getLineNumber() > 0);
-            assertTrue(error.getColumnIndex() >= 0);
+            assertTrue(error.getLine() > 0);
+            assertTrue(error.getColumn() >= 0);
         });
         
         final String errorMessage = "is(concat($c1, $c2)) fails for row: 3, column: c3, value: \"ccccc\"";
 
-        assertEquals(errorMessage, validationResponse.getErrors().getFirst().getMessage());
-        assertEquals(3, validationResponse.getErrors().getFirst().getLineNumber());
-        assertEquals(3, validationResponse.getErrors().getFirst().getColumnIndex());
+        assertEquals(errorMessage, validationResponse.getFailures().getFirst().getMessage());
+        assertEquals(3, validationResponse.getFailures().getFirst().getLine());
+        assertEquals(3, validationResponse.getFailures().getFirst().getColumn());
         
-        assertTrue(validationResponse.getExecutionTimeMs() > -1);
+        assertTrue(validationResponse.getExecutionTime() > -1);
         
     }
 
@@ -251,9 +254,10 @@ public class ValidateControllerTest {
 
         final ValidationResponse validationResponse = response.getBody().get();
 
-        assertTrue(validationResponse.isValid());
-        assertTrue(validationResponse.getErrors().isEmpty());
-        assertTrue(validationResponse.getExecutionTimeMs() > -1);
+        assertTrue(validationResponse.isPassed());
+        assertTrue(validationResponse.isUtf8Valid());
+        assertTrue(validationResponse.getFailures().isEmpty());
+        assertTrue(validationResponse.getExecutionTime() > -1);
     }
 
     @Test
@@ -275,23 +279,24 @@ public class ValidateControllerTest {
 
         final ValidationResponse validationResponse = response.getBody().get();
         
-        assertFalse(validationResponse.isValid());
-        assertFalse(validationResponse.getErrors().isEmpty());
+        assertFalse(validationResponse.isPassed());
+        assertTrue(validationResponse.isUtf8Valid());
+        assertFalse(validationResponse.getFailures().isEmpty());
 
-        validationResponse.getErrors().forEach(error -> {
+        validationResponse.getFailures().forEach(error -> {
             assertNotNull(error.getMessage());
             assertFalse(error.getMessage().isEmpty());
-            assertTrue(error.getLineNumber() > 0);
-            assertTrue(error.getColumnIndex() >= 0);
+            assertTrue(error.getLine() > 0);
+            assertTrue(error.getColumn() >= 0);
         });
         
         final String errorMessage = "is(concat($c1, $c2)) fails for row: 3, column: c3, value: \"ccccc\"";
 
-        assertEquals(errorMessage, validationResponse.getErrors().getFirst().getMessage());
-        assertEquals(3, validationResponse.getErrors().getFirst().getLineNumber());
-        assertEquals(3, validationResponse.getErrors().getFirst().getColumnIndex());
+        assertEquals(errorMessage, validationResponse.getFailures().getFirst().getMessage());
+        assertEquals(3, validationResponse.getFailures().getFirst().getLine());
+        assertEquals(3, validationResponse.getFailures().getFirst().getColumn());
         
-        assertTrue(validationResponse.getExecutionTimeMs() > -1);
+        assertTrue(validationResponse.getExecutionTime() > -1);
 
     }
 
@@ -357,7 +362,7 @@ public class ValidateControllerTest {
 
     @Test
     void provideNonCsvUrlAndValidateCsvFromForm() {
-        final String url = "https://evolvedbinary.com/images/icons/ev-logo.svg";
+        final String url = server.getURL() + "/mock-data/utf8-invalid.jpg";
         final String schemaId = "concat";
         final Map<String, String> formBody = Map.of(
                 "schemaId", schemaId,
@@ -377,10 +382,11 @@ public class ValidateControllerTest {
 
         final ValidationResponse validationResponse = response.getBody().get();
         
-        assertFalse(validationResponse.isValid());
-        assertFalse(validationResponse.getErrors().isEmpty());
+        assertFalse(validationResponse.isPassed());
+        assertFalse(validationResponse.isUtf8Valid());
+        assertFalse(validationResponse.getFailures().isEmpty());
 
-        assertTrue(validationResponse.getExecutionTimeMs() > -1);
+        assertTrue(validationResponse.getExecutionTime() > -1);
 
     }
 
@@ -442,7 +448,7 @@ public class ValidateControllerTest {
 
     @Test
     void provideNonCsvUrlAndValidateCsvInQueryString() {
-        final String url = "https://evolvedbinary.com/images/icons/ev-logo.svg";
+        final String url = server.getURL() + "/mock-data/utf8-invalid.jpg";
         final String schemaId = "concat";
 
         final MutableHttpRequest<Void> request = HttpRequest.POST("/", null);
@@ -460,10 +466,11 @@ public class ValidateControllerTest {
 
         final ValidationResponse validationResponse = response.getBody().get();
 
-        assertFalse(validationResponse.isValid());
-        assertFalse(validationResponse.getErrors().isEmpty());
+        assertFalse(validationResponse.isPassed());
+        assertFalse(validationResponse.isUtf8Valid());
+        assertFalse(validationResponse.getFailures().isEmpty());
 
-        assertTrue(validationResponse.getExecutionTimeMs() > -1);
+        assertTrue(validationResponse.getExecutionTime() > -1);
     }
 
 }

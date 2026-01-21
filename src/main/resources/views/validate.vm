@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/simple.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <title>BBL Validator</title>
+</head>
+<body>
+    <div class="container">
+        <h1>BBL Validator</h1>
+        <h4>API documentation: <a href="/static/openapi.yaml">OpenAPI YAML</a> Or <a href="https://app.swaggerhub.com/apis/evolvedbinary/bbl-validator-web-api/1.0.0">Swagger UI</a></h4>
+        <form id="validateForm" action="/views/validate" method="POST">
+            <div class="form-group">
+                <label for="schemaId">Schema ID</label>
+                <select id="schemaId" name="schemaId" required>
+                    <option value="" disabled #if(!$schemaId || $schemaId == "") selected #end>Select a Schema</option>
+                    #foreach($schema in $schemas)
+                        <option value="$schema.id" #if($schema.id == $schemaId) selected #end>$schema.id</option>
+                    #end
+                </select>
+            </div>
+
+            <label>
+                <input type="radio" name="csvSource" value="url" #if($csvSource == "url") checked #end required>
+                CSV URL
+                <br>
+                <input type="url" name="csvUrl" placeholder="Paste your CSV URL here..." value="$!csvUrl">
+            </label>
+
+            <label>
+                <input type="radio" name="csvSource" value="content" #if($csvSource == "content") checked #end required>
+                CSV Content
+                <br>
+                <textarea name="csvContent" placeholder="Paste your CSV content here...">$!csvContent</textarea>
+            </label>
+
+            <button type="submit" id="submitBtn">
+                <span id="btnText">Validate</span>
+            </button>
+        </form>
+
+        <div id="result">
+            #if($result)
+                <h3>Validation Result</h3>
+                <p>Status: <strong>#if($result.passed) Valid #else Invalid #end</strong></p>
+                #if(!$result.utf8Valid)
+                    <p><strong>The file is not valid UTF-8</strong></p>
+                #end
+                <p>Execution Time: $result.executionTime ms</p>
+            #end
+
+            #if($errorsTable)
+                <h3>Errors</h3>
+                <table>
+                    <thead>
+                        <th>Error No.</th>
+                        <th>Message</th>
+                    </thead>
+                    <tbody>
+                        #foreach($row in $errorsTable)
+                            <tr>
+                                <th>$foreach.count</th>
+                                <td>$row</td>
+                            </tr>
+                        #end
+                    </tbody>
+                </table>
+            #end
+        </div>
+    </div>
+</body>
+</html>

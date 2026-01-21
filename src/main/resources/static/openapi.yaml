@@ -1,0 +1,329 @@
+openapi: 3.1.0
+
+info:
+  title: Broadband Label Validator API
+  description: A HTTP REST API validation service for validating Broadband Labels
+  version: 1.0.0
+  contact:
+    email: tech@evolvedbinary.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+tags:
+  - name: version
+    description: API version information
+  - name: schema
+    description: Broadband Label file schema management and validation
+
+servers:
+  - description: BBL Validator
+    url: https://bbl-validator.evolvedbinary.com
+
+paths:
+  /version:
+    get:
+      tags:
+        - version
+      summary: Get version information about the API
+      description: Returns the version number of the HTTP REST API software
+      operationId: getVersion
+      responses:
+        '200':
+          description: Successfully retrieved API version
+          headers:
+            X-BBLVALIDATOR-VERSION:
+              $ref: '#/components/headers/XBBLValidatorVersion'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiVersion'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+          
+  /schema:
+    get:
+      tags:
+        - schema
+      summary: List available Broadband Label file Schemas
+      operationId: listSchemas
+      description: Returns details of all of the available Broadband Label file schema variants and versions
+      responses:
+        '200':
+          description: The list of available schemas and their details
+          headers:
+            X-BBLVALIDATOR-VERSION:
+              $ref: '#/components/headers/XBBLValidatorVersion'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SchemaList'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+          
+  /schema/{schema-id}:
+    get:
+      tags:
+        - schema
+      summary: Retrieve a Broadband Label file Schema
+      operationId: getSchema
+      description: Returns the requested Broadband Label file Schema
+      parameters:
+        - $ref: '#/components/parameters/SchemaId'
+      responses:
+        '200':
+          description: The Broadband Label file schema
+          headers:
+            X-BBLVALIDATOR-VERSION:
+              $ref: '#/components/headers/XBBLValidatorVersion'
+          content:
+             text/csv-schema:
+              schema:
+                type: string
+                description: The Broadband Label file schema
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+          
+  /validate:
+    post:
+      tags:
+        - schema
+      summary: Validate a Broadband Label File (CSV) against a Schema
+      operationId: validateCsv
+      description: Validates Broadband Label file (CSV) against a specified CSV Schema. CSV can be provided via URL, or uploaded in the request body.
+      parameters:
+        - in: query
+          name: schema-id
+          required: false
+          description: The ID of the CSV Schema to use for validation
+          schema:
+            type: string
+            examples:
+              - "bbl-global-schema-1.2.0"
+        - in: query
+          name: url
+          required: false
+          description: URL of the Broadband Label file to retrieve and validate
+          schema:
+            type: string
+            format: uri
+            examples:
+              - "https://bbl-validator.evolvedbinary.com/schema/bbl-global-schema-1.2.0.csvs"
+      requestBody:
+        description: Either a Broadband Label File, or parameters on where to retrieve a Broadband Label File from
+        required: false
+        content:
+          text/csv:
+            schema:
+              type: string
+              format: binary
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                schema-id:
+                  type: string
+                  description: The ID of the CSV Schema to use for validation
+                  examples:
+                    - "bbl-global-schema-1.2.0"
+                url:
+                  type: string
+                  format: uri
+                  description: URL of Broadband Label file to validate
+                  examples:
+                    - "https://bbl-validator.evolvedbinary.com/schema/bbl-global-schema-1.2.0.csvs"
+      responses:
+        '200':
+          description: Validation report
+          headers:
+            X-BBLVALIDATOR-VERSION:
+              $ref: '#/components/headers/XBBLValidatorVersion'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  parameters:
+    SchemaId:
+      in: path
+      name: schema-id
+      required: true
+      description: Unique identifier of the schema to retrieve
+      schema:
+        type: string
+        examples:
+          - "csv-schema-v1"
+        
+  headers:
+    XBBLValidatorVersion:
+      description: Semantic version number of the HTTP REST API software
+      schema:
+        type: string
+        examples:
+          - "1.0.0"
+        
+  schemas:
+    ApiVersion:
+      type: object
+      required:
+        - version
+      properties:
+        version:
+          type: string
+          description: Version number of the API
+          examples:
+            - "1.0.0"
+          
+    SchemaInfo:
+      type: object
+      required:
+        - id
+        - name
+        - version
+        - date
+        - url
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the schema
+          examples:
+            - "bbl-global-schema-1.2.0"
+        name:
+          type: string
+          description: The name of the schema
+          examples:
+            - "bbl-global-schema"
+        version:
+          type: string
+          description: Semantic version of the schema
+          examples:
+            - "1.2.0"
+        date:
+          type: string
+          format: date
+          description: Release date of the schema
+          examples:
+            - "2025-12-05"
+        url:
+          type: string
+          format: uri
+          description: URL for retrieving the schema
+          examples:
+            - "https://bbl-validator.evolvedbinary.com/schema/bbl-global-schema-1.2.0.csvs"
+        description:
+          type: string
+          description: Additional information about this schema
+          examples:
+            - "Updated to support new validation rules"
+          
+    SchemaList:
+      type: array
+      items:
+        $ref: '#/components/schemas/SchemaInfo'
+        
+    ValidationResult:
+      type: object
+      required:
+        - executionTime
+        - passed
+        - utf8Valid
+      properties:
+        executionTime:
+          type: number
+          format: double
+          description: Time taken to execute validation (in milliseconds)
+          examples:
+            - 243.5
+        passed:
+          type: boolean
+          description: True if the Broadband Label file validated against the Schema, false otherwise
+        utf8Valid:
+          type: boolean
+          description: True if the Broadband Label file is valid UTF-8 encoded
+        failures:
+          type: array
+          description: Details of validation failures (only present if passed is false)
+          items:
+            $ref: '#/components/schemas/ValidationFailure'
+            
+    ValidationFailure:
+      type: object
+      required:
+        - line
+        - column
+        - message
+      properties:
+        line:
+          type: integer
+          description: Line number where a validation error occurred
+          examples:
+            - 42
+        column:
+          type: integer
+          description: Column index where a validation error occurred
+          examples:
+            - 3
+        message:
+          type: string
+          description: Description of the validation error
+          examples:
+            - "Invalid email format"
+          
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - description
+      properties:
+        code:
+          type: string
+          enum:
+            - SCHEMA_NOT_FOUND
+            - UNEXPECTED_ERROR
+            - NO_CSV
+            - NON_RESOLVABLE_URL
+            - VALIDATION_ERROR
+          description: An identifier that indicates the specific error
+        description:
+          type: string
+          description: Human-readable error description
+          examples:
+            - "An unexpected error occurred while processing your request"
+        
+  responses:
+    BadRequest:
+      description: Invalid request due to missing or malformed parameters
+      headers:
+        X-BBLVALIDATOR-VERSION:
+          $ref: '#/components/headers/XBBLValidatorVersion'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+                      
+    NotFound:
+      description: Requested resource not found
+      headers:
+        X-BBLVALIDATOR-VERSION:
+          $ref: '#/components/headers/XBBLValidatorVersion'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+                
+    InternalServerError:
+      description: Server procuded an unexpected error during processing
+      headers:
+        X-BBLVALIDATOR-VERSION:
+          $ref: '#/components/headers/XBBLValidatorVersion'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

@@ -1,6 +1,6 @@
 package com.evolvedbinary.bblValidator.service;
 
-import com.evolvedbinary.bblValidator.dto.ValidationError;
+import com.evolvedbinary.bblValidator.dto.ValidationFailure;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.slf4j.Logger;
@@ -41,23 +41,28 @@ public class CsvValidationService {
                 enforceCaseSensitivePathChecks, trace, null, skipFileChecks, -1);
 
         final long startTime = System.currentTimeMillis();
-        CsvValidatorJavaBridge.ValidationResult result = CsvValidatorJavaBridge.validate(validationRequest);
+        final CsvValidatorJavaBridge.ValidationResult result = CsvValidatorJavaBridge.validate(validationRequest);
         final List<FailMessage> errors = result.errors();
         final long executionTime = System.currentTimeMillis() - startTime;
         return processValidationMessages(errors, executionTime);
     }
 
 
-    private ValidationResult processValidationMessages(final List<FailMessage> messages, final long executionTimeMs) {
+    private ValidationResult processValidationMessages(final List<FailMessage> messages, final long executionTime) {
         if (messages.isEmpty()) {
-            LOG.trace("CSV validation successful - no errors ({}ms)", executionTimeMs);
-            return ValidationResult.success(executionTimeMs);
+            LOG.trace("CSV validation successful - no errors ({}ms)", executionTime);
+            return ValidationResult.success(executionTime);
         }
 
-        final List<ValidationError> errors = new ArrayList<>();
+        final List<ValidationFailure> errors = new ArrayList<>();
+        boolean utf8Valid = true;
 
         for (final FailMessage message : messages) {
-            final ValidationError error = new ValidationError(
+            // if one error is a UTF-8 error, then the file is not valid
+            if(message.getMessage().startsWith("[UTF-8 Error]")) {
+                utf8Valid = false;
+            }
+            final ValidationFailure error = new ValidationFailure(
                 message.getMessage(),
                 message.getLineNumber(),
                 message.getColumnIndex() + 1  // Add 1 for user display
@@ -67,46 +72,41 @@ public class CsvValidationService {
                      message.getLineNumber(), message.getColumnIndex(), message.getMessage());
         }
 
-        LOG.trace("CSV validation completed - Valid: false, Errors: {} ({}ms)", errors.size(), executionTimeMs);
-        return new ValidationResult(false, errors, executionTimeMs);
+        LOG.trace("CSV validation completed - Valid: false, Errors: {} ({}ms)", errors.size(), executionTime);
+
+        return new ValidationResult(false, errors, executionTime, utf8Valid);
     }
 
 
     public static class ValidationResult {
-        private final boolean valid;
-        private final List<ValidationError> errors;
-        private final String errorMessage;
-        private final long executionTimeMs;
+        private final boolean passed;
+        private final List<ValidationFailure> failures;
+        private final long executionTime;
+        private final boolean utf8Valid;
 
-        public ValidationResult(final boolean valid, final List<ValidationError> errors, final long executionTimeMs) {
-            this.valid = valid;
-            this.errors = errors;
-            this.errorMessage = null;
-            this.executionTimeMs = executionTimeMs;
+        public ValidationResult(final boolean passed, final List<ValidationFailure> failures, final long executionTime, final boolean utf8Valid) {
+            this.passed = passed;
+            this.failures = failures;
+            this.executionTime = executionTime;
+            this.utf8Valid = utf8Valid;
         }
 
-        public static ValidationResult success(final long executionTimeMs) {
-            return new ValidationResult(true, Collections.emptyList(), executionTimeMs);
+        public static ValidationResult success(final long executionTime) {
+            return new ValidationResult(true, Collections.emptyList(), executionTime, true);
         }
 
-        public boolean isValid() {
-            return valid;
+        public boolean isPassed() {
+            return passed;
         }
 
-        public List<ValidationError> getErrors() {
-            return errors;
+        public List<ValidationFailure> getFailures() {
+            return failures;
         }
 
-        public String getErrorMessage() {
-            return errorMessage;
+        public long getExecutionTime() {
+            return executionTime;
         }
 
-        public boolean hasErrorMessage() {
-            return errorMessage != null;
-        }
-
-        public long getExecutionTimeMs() {
-            return executionTimeMs;
-        }
+        public boolean isUtf8Valid() { return utf8Valid; }
     }
 }
