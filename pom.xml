@@ -21,6 +21,7 @@
         <micronaut.validation.version>4.12.0</micronaut.validation.version>
         <micronaut.test.resources.version>2.8.2</micronaut.test.resources.version>
         <micronaut.runtime>netty</micronaut.runtime>
+        <junit.version>6.0.1</junit.version>
         <exec.mainClass>com.evolvedbinary.bblValidator.Application</exec.mainClass>
     </properties>
 
@@ -29,7 +30,8 @@
         <dependency>
             <groupId>io.micronaut</groupId>
             <artifactId>micronaut-http-server-netty</artifactId>
-            <version>${micronaut.version}</version>
+        <!-- TODO(YB) check for updates    https://www.mend.io/vulnerability-database/CVE-2025-67735 -->
+            <version>4.10.12</version>
         </dependency>
 
         <!-- Micronaut Inject -->
@@ -105,11 +107,52 @@
             <version>1.4.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.14</version>
+        </dependency>
+
          <!-- https://mvnrepository.com/artifact/com.fasterxml.uuid/java-uuid-generator -->
         <dependency>
             <groupId>com.fasterxml.uuid</groupId>
             <artifactId>java-uuid-generator</artifactId>
             <version>5.2.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.jcip</groupId>
+            <artifactId>jcip-annotations</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <!-- Test Dependencies -->
+        <dependency>
+            <groupId>io.micronaut.test</groupId>
+            <artifactId>micronaut-test-junit5</artifactId>
+            <version>4.6.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.micronaut</groupId>
+            <artifactId>micronaut-http-client</artifactId>
+            <version>${micronaut.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -120,6 +163,12 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
 
         <plugins>
             <!-- Maven Compiler Plugin -->

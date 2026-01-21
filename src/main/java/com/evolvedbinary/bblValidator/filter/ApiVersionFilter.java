@@ -15,9 +15,11 @@ public class ApiVersionFilter implements HttpServerFilter {
     @Value("${api.version}")
     private String version;
 
+    public static final String BBLVALIDATOR_VERSION_HEADER = "X-BBLVALIDATOR-VERSION";
+
     @Override
-    public Publisher<MutableHttpResponse<?>> doFilter(HttpRequest<?> request, ServerFilterChain chain) {
+    public Publisher<MutableHttpResponse<?>> doFilter(final HttpRequest<?> request, final ServerFilterChain chain) {
         return Flux.from(chain.proceed(request))
-                .doOnNext(response -> response.header("X-BBLVALIDATOR-VERSION", version));
+                .doOnNext(response -> response.header(BBLVALIDATOR_VERSION_HEADER, version));
     }
 }

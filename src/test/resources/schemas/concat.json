@@ -1,7 +1,8 @@
 {
-  "id": "thunder-stone-sample-csvs",
-  "name": "thunder-stone-sample-csvs",
+  "id": "concat",
+  "name": "concat",
   "version": "1.0.0",
   "date": "2015-11-01",
+  "url": "https://localhost/concat.csvs",
   "description": "sample file for testing"
 }

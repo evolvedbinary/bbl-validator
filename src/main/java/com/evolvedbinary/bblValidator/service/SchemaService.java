@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.annotation.Value;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Singleton;
+import net.jcip.annotations.GuardedBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,9 +18,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Stream;
 
-// TODO talk to Adam about syncronaztion
 @Singleton
 public class SchemaService {
 
@@ -29,7 +31,10 @@ public class SchemaService {
     private String schemaDirectory;
 
     private final List<SchemaInfo> schemas = new ArrayList<>();
+    private final ReadWriteLock schemaLock = new ReentrantReadWriteLock();
+    @GuardedBy("schemaLock")
     private final Map<String, String> schemaContents = new HashMap<>();
+    @GuardedBy("schemaLock")
     private final Map<String, Path> schemaFilePaths = new HashMap<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -37,24 +42,26 @@ public class SchemaService {
     public void loadSchemas() {
         try {
             // Resolve schema directory path
-            Path schemaPath = resolveSchemaPath();
+            final Path schemaPath = resolveSchemaPath();
 
             if (!Files.exists(schemaPath)) {
-                LOG.warn("Schemas directory not found: {}", schemaPath);
-                return;
+                LOG.error("Schemas directory not found: {}", schemaPath);
+                throw new IllegalStateException("Schemas directory not found: " + schemaPath);
             }
 
             if (!Files.isDirectory(schemaPath)) {
-                LOG.warn("Schema path is not a directory: {}", schemaPath);
-                return;
+                LOG.error("Schema path is not a directory: {}", schemaPath);
+                throw new IllegalStateException("Schema path is not a directory: " + schemaPath);
             }
 
             // Scan for schema metadata files
             loadSchemasFromFileSystem(schemaPath);
 
-            LOG.info("Loaded {} schemas from: {}", schemas.size(), schemaPath);
-        } catch (Exception e) {
-            LOG.error("Error loading schemas from file system", e);
+            LOG.trace("Loaded {} schemas from: {}", schemas.size(), schemaPath);
+        } catch (final SecurityException e) {
+            LOG.error("You don't have enough permissions to open this file: ", e);
+            throw new IllegalStateException("You don't have permission to open Schema directory ");
+
         }
     }
 
@@ -64,47 +71,51 @@ public class SchemaService {
      * Otherwise, it's resolved relative to the current working directory (startup location).
      */
     private Path resolveSchemaPath() {
-        Path schemaPath =  Paths.get(schemaDirectory);
+        final Path schemaPath =  Paths.get(schemaDirectory);
         if (schemaPath.isAbsolute()) {
             // Absolute path
             return schemaPath;
         } else {
             // Relative to current working
-            Path applicationDir = Paths.get(System.getProperty("user.dir"));
+            final Path applicationDir = Paths.get(System.getProperty("user.dir"));
             return applicationDir.resolve(schemaPath);
         }
     }
 
-    private void loadSchemasFromFileSystem(Path schemaPath) {
+    private void loadSchemasFromFileSystem(final Path schemaPath) {
         try (Stream<Path> paths = Files.walk(schemaPath, 1)) {
             paths.filter(path -> path.toString().endsWith(".json"))
                     .forEach(path -> {
                         try {
                             loadSchemaMetadata(path);
-                        } catch (Exception e) {
-                            LOG.error("Error loading schema metadata from: {}", path, e);
+                        } catch (final IOException e) {
+                            LOG.warn("Error loading schema metadata from: {}", path, e);
                         }
                     });
-        } catch (IOException e) {
-            LOG.error("Error scanning schema directory: {}", schemaPath, e);
+        } catch (final IOException e) {
+            LOG.warn("Error scanning schema directory: {}", schemaPath, e);
         }
     }
 
-    private void loadSchemaMetadata(Path metadataPath) throws IOException {
-        String content = Files.readString(metadataPath, StandardCharsets.UTF_8);
-        SchemaInfo schemaInfo = objectMapper.readValue(content, SchemaInfo.class);
+    private void loadSchemaMetadata(final Path metadataPath) throws IOException {
+        final String content = Files.readString(metadataPath, StandardCharsets.UTF_8);
+        final SchemaInfo schemaInfo = objectMapper.readValue(content, SchemaInfo.class);
 
         // Load corresponding schema file
-        String schemaFileName = metadataPath.getFileName().toString().replace(".json", ".csvs");
-        Path schemaFilePath = metadataPath.getParent().resolve(schemaFileName);
+        final String schemaFileName = metadataPath.getFileName().toString().replace(".json", ".csvs");
+        final Path schemaFilePath = metadataPath.getParent().resolve(schemaFileName);
 
         if (Files.exists(schemaFilePath)) {
-            String schemaContent = Files.readString(schemaFilePath, StandardCharsets.UTF_8);
-            // TODO: Only load the schema content when needed
-            schemaContents.put(schemaInfo.getId(), schemaContent);
-            schemaFilePaths.put(schemaInfo.getId(), schemaFilePath);
+            final String schemaContent = Files.readString(schemaFilePath, StandardCharsets.UTF_8);
+            schemaLock.writeLock().lock();
+            try {
+                schemaContents.put(schemaInfo.getId(), schemaContent);
+                schemaFilePaths.put(schemaInfo.getId(), schemaFilePath);
+            } finally {
+                schemaLock.writeLock().unlock();
+            }
             schemas.add(schemaInfo);
-            LOG.debug("Loaded schema: {}", schemaInfo.getId());
+            LOG.trace("Loaded schema: {}", schemaInfo.getId());
         } else {
             LOG.warn("Schema file not found for metadata: {}", schemaFileName);
         }
@@ -114,12 +125,22 @@ public class SchemaService {
         return schemas;
     }
 
-    public String getSchema(String schemaId) {
-        return schemaContents.get(schemaId);
+    public String getSchema(final String schemaId) {
+        schemaLock.readLock().lock();
+        try {
+            return schemaContents.get(schemaId);
+        } finally {
+            schemaLock.readLock().unlock();
+        }
     }
 
-    public Path getSchemaFilePath(String schemaId) {
-        return schemaFilePaths.get(schemaId);
+    public Path getSchemaFilePath(final String schemaId) {
+        schemaLock.readLock().lock();
+        try {
+            return schemaFilePaths.get(schemaId);
+        } finally {
+            schemaLock.readLock().unlock();
+        }
     }
 }
 

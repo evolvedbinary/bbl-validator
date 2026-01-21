@@ -2,49 +2,37 @@ package com.evolvedbinary.bblValidator.dto;
 
 import io.micronaut.serde.annotation.Serdeable;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+/**
+ * Response object representing the result of a validation operation.
+ */
 @Serdeable
-public class ValidationResponse {
+public final class ValidationResponse implements ResponseObject {
 
-    private boolean valid;
-    private List<ValidationError> errors;
-    private long executionTimeMs;
+    private final boolean valid;
+    private final List<ValidationError> errors;
+    private final long executionTimeMs;
 
-    public ValidationResponse() {
-        this.errors = new ArrayList<>();
-    }
-
-    public ValidationResponse(boolean valid,
-                            List<ValidationError> errors, long executionTimeMs) {
+    public ValidationResponse(final boolean valid,
+                              final List<ValidationError> errors,
+                              final long executionTimeMs) {
         this.executionTimeMs = executionTimeMs;
         this.valid = valid;
-        this.errors = errors != null ? errors : new ArrayList<>();
+        this.errors = errors != null ? errors : Collections.emptyList();
     }
-
 
     public boolean isValid() {
         return valid;
-    }
-
-    public void setValid(boolean valid) {
-        this.valid = valid;
     }
 
     public List<ValidationError> getErrors() {
         return errors;
     }
 
-    public void setErrors(List<ValidationError> errors) {
-        this.errors = errors;
-    }
-
     public long getExecutionTimeMs() {
         return executionTimeMs;
     }
 
-    public void setExecutionTimeMs(long executionTimeMs) {
-        this.executionTimeMs = executionTimeMs;
-    }
 }
