@@ -294,6 +294,12 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.5.0</version>
             </plugin>
+            <!-- Maven Source Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.4.0</version>
+            </plugin>
         </plugins>
     </build>
 </project>
