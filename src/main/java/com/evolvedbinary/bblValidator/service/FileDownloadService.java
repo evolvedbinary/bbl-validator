@@ -3,15 +3,17 @@ package com.evolvedbinary.bblValidator.service;
 import com.fasterxml.uuid.Generators;
 import com.fasterxml.uuid.impl.RandomBasedGenerator;
 import jakarta.inject.Singleton;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.core5.util.TimeValue;
+import org.apache.hc.core5.util.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,7 +21,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 @Singleton
 public class FileDownloadService {
@@ -37,13 +38,13 @@ public class FileDownloadService {
         this.poolingHttpClientConnectionManager = new PoolingHttpClientConnectionManager();
         this.poolingHttpClientConnectionManager.setMaxTotal(20);
         this.poolingHttpClientConnectionManager.setDefaultMaxPerRoute(15);
-        this.poolingHttpClientConnectionManager.setValidateAfterInactivity(15_000);
+        this.poolingHttpClientConnectionManager.setValidateAfterInactivity(TimeValue.ofMilliseconds(15_000));
 
         this.httpRequestConfig = RequestConfig.custom()
-            .setConnectTimeout(10_000)
-            .setSocketTimeout(10_000)
-            .setConnectionRequestTimeout(3_000)
-            .build();
+                .setConnectTimeout(Timeout.ofMilliseconds(10_000))
+                .setResponseTimeout(Timeout.ofMilliseconds(10_000))
+                .setConnectionRequestTimeout(Timeout.ofMilliseconds(3_000))
+                .build();
 
         try {
             this.sharedTempDir = Files.createTempDirectory(TEMP_DIR_NAME);
@@ -57,7 +58,7 @@ public class FileDownloadService {
                 .custom()
                 .setConnectionManager(poolingHttpClientConnectionManager)
                 .setDefaultRequestConfig(httpRequestConfig)
-                .evictIdleConnections(30, TimeUnit.SECONDS)
+                .evictIdleConnections(TimeValue.ofSeconds(30))
                 .evictExpiredConnections()
                 .build();
     }
@@ -77,8 +78,9 @@ public class FileDownloadService {
             final HttpGet httpGet = new HttpGet(url);
 
             try (final CloseableHttpResponse response = buildHttpClient().execute(httpGet)) {
-                
-                final int statusCode = response.getStatusLine().getStatusCode();
+
+                final int statusCode = response.getCode();
+
                 if (statusCode != HttpStatus.SC_OK) {
                     throw new IOException("Non Resolvable url: " + url);
                 }
