@@ -1,4 +1,10 @@
 # Broadband Label file Validator Service
+
+[![Build Status](https://github.com/evolvedbinary/bbl-validator/actions/workflows/ci.yml/badge.svg)](https://github.com/evolvedbinary/bbl-validator/actions/workflows/ci.yml)
+[![Java 21](https://img.shields.io/badge/Java-21-blue?logo=openjdk&logoColor=white)](https://adoptium.net/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Maven Central](https://img.shields.io/maven-central/v/com.evolvedbinary.bblValidator/bbl-validator?color=blue&style=flat-square)](https://central.sonatype.com/artifact/com.evolvedbinary.bblValidator/bbl-validator)
+
 This project provides a solution for validating Broadband Label files against defined Schemas. Developed for [Comcast](https://www.comcast.com) by [Evolved Binary](https://www.evolvedbinary.com) for use with the [FCC Broadband Labels](https://www.fcc.gov/broadbandlabels) initiative, the system consists of a HTTP REST API and a user-friendly Web Application.
 
 The core validation logic is built upon the Open Source [CSV Validator](https://github.com/digital-preservation/csv-validator) library, originally developed for [The National Archives](https://www.nationalarchives.gov.uk/).
