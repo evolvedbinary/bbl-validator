@@ -168,6 +168,13 @@
         </dependency>
     </dependencies>
 
+    <scm>
+        <connection>scm:git:https://github.com/evolvedbinary/bbl-validator.git</connection>
+        <developerConnection>scm:git:https://github.com/evolvedbinary/bbl-validator.git</developerConnection>
+        <url>https://github.com/evolvedbinary/bbl-validator</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <build>
         <resources>
             <resource>
@@ -337,7 +344,7 @@
                             </ignoredUnusedDeclaredDependencies>
                             <ignoredUsedUndeclaredDependencies>
                                 <!-- NOTE: the maven-dependency-plugin insists that we need this, seems to be
-                                    some sort of missing transient dependency for maven-invoker-plugin ITs -->
+                                     some sort of missing transient dependency for maven-invoker-plugin ITs -->
                                 <ignoredUsedUndeclaredDependency>org.eclipse.sisu:org.eclipse.sisu.plexus:jar</ignoredUsedUndeclaredDependency>
                             </ignoredUsedUndeclaredDependencies>
                             <ignoredNonTestScopedDependencies>
@@ -362,54 +369,7 @@
                             <Build-Tag>${build-tag}</Build-Tag>
                             <Git-Commit>${build-commit}</Git-Commit>
                             <Git-Commit-Abbrev>${build-commit-abbrev}</Git-Commit-Abbrev>
-                            <Build-Version>${build-version}</Build-Version>
-                            <Build-Timestamp>${maven.build.timestamp}</Build-Timestamp>
-                            <Source-Repository>${project.scm.connection}</Source-Repository>
-                            <Description>${project.description}</Description>
-                            <Implementation-URL>${project.url}</Implementation-URL>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
-
-            <!-- Maven Source plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                        </manifest>
-                        <manifestEntries>
-                            <Build-Tag>${build-tag}</Build-Tag>
-                            <Git-Commit>${build-commit}</Git-Commit>
-                            <Git-Commit-Abbrev>${build-commit-abbrev}</Git-Commit-Abbrev>
-                            <Build-Timestamp>${maven.build.timestamp}</Build-Timestamp>
-                            <Build-Version>${build-version}</Build-Version>
-                            <Source-Repository>${project.scm.connection}</Source-Repository>
-                            <Description>${project.description}</Description>
-                            <Implementation-URL>${project.url}</Implementation-URL>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
-
-            <!-- Maven Javadoc plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                        </manifest>
-                        <manifestEntries>
-                            <Build-Tag>${build-tag}</Build-Tag>
-                            <Git-Commit>${build-commit}</Git-Commit>
-                            <Git-Commit-Abbrev>${build-commit-abbrev}</Git-Commit-Abbrev>
+                            <Git-Commit-Timestamp>${build-tstamp}</Git-Commit-Timestamp>
                             <Build-Version>${build-version}</Build-Version>
                             <Build-Timestamp>${maven.build.timestamp}</Build-Timestamp>
                             <Source-Repository>${project.scm.connection}</Source-Repository>
@@ -431,8 +391,98 @@
                     <releaseProfiles>bbl-validator</releaseProfiles>
                 </configuration>
             </plugin>
-
-
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>bbl-validator</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                                    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                </manifest>
+                                <manifestEntries>
+                                    <Build-Tag>${build-tag}</Build-Tag>
+                                    <Git-Commit>${build-commit}</Git-Commit>
+                                    <Git-Commit-Abbrev>${build-commit-abbrev}</Git-Commit-Abbrev>
+                                    <Git-Commit-Timestamp>${build-tstamp}</Git-Commit-Timestamp>
+                                    <Build-Version>${build-version}</Build-Version>
+                                    <Build-Timestamp>${maven.build.timestamp}</Build-Timestamp>
+                                    <Source-Repository>${project.scm.connection}</Source-Repository>
+                                    <Description>${project.description}</Description>
+                                    <Implementation-URL>${project.url}</Implementation-URL>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                                    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                </manifest>
+                                <manifestEntries>
+                                    <Build-Tag>${build-tag}</Build-Tag>
+                                    <Git-Commit>${build-commit}</Git-Commit>
+                                    <Git-Commit-Abbrev>${build-commit-abbrev}</Git-Commit-Abbrev>
+                                    <Git-Commit-Timestamp>${build-tstamp}</Git-Commit-Timestamp>
+                                    <Build-Version>${build-version}</Build-Version>
+                                    <Build-Timestamp>${maven.build.timestamp}</Build-Timestamp>
+                                    <Source-Repository>${project.scm.connection}</Source-Repository>
+                                    <Description>${project.description}</Description>
+                                    <Implementation-URL>${project.url}</Implementation-URL>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
