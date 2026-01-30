@@ -22,3 +22,5 @@ jobs:
         run: mvn -V -B test
       - name: Check JavaDoc
         run: mvn -V -B javadoc:javadoc
+      - name: Check License
+        run: mvn -V -B license:check
