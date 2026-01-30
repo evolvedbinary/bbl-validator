@@ -13,9 +13,10 @@
     </organization>
 
     <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.source>21</project.build.source>
+        <project.build.target>21</project.build.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
         <micronaut.version>4.10.14</micronaut.version>
         <micronaut.test.version>4.10.2</micronaut.test.version>
         <micronaut.validation.version>4.12.0</micronaut.validation.version>
@@ -341,7 +342,9 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.14.1</version>
                 <configuration>
-                    <release>21</release>
+                    <source>${project.build.source}</source>
+                    <target>${project.build.target}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>io.micronaut</groupId>
