@@ -32,6 +32,7 @@
             <groupId>io.micronaut</groupId>
             <artifactId>micronaut-http-server-netty</artifactId>
             <version>${micronaut.version}</version>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- Micronaut Inject -->
@@ -46,6 +47,7 @@
             <groupId>io.micronaut</groupId>
             <artifactId>micronaut-runtime</artifactId>
             <version>${micronaut.version}</version>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- Micronaut Serde API - Required for @Serdeable annotation -->
@@ -68,6 +70,7 @@
             <groupId>io.micronaut.reactor</groupId>
             <artifactId>micronaut-reactor</artifactId>
             <version>3.9.1</version>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- Micronaut view render  -->
@@ -82,6 +85,7 @@
             <groupId>io.micronaut.views</groupId>
             <artifactId>micronaut-views-velocity</artifactId>
             <version>5.9.0</version>
+            <scope>runtime</scope>
         </dependency>
 
         <dependency>
@@ -157,7 +161,6 @@
             <artifactId>jackson-core</artifactId>
             <version>${jackson.version}</version>
         </dependency>
-
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -244,6 +247,7 @@
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-commons</artifactId>
             <version>${junit.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -450,17 +454,17 @@
                         </goals>
                         <configuration>
                             <failOnWarning>true</failOnWarning>
+                            <ignoreUnusedRuntime>true</ignoreUnusedRuntime>
+
                             <ignoredUnusedDeclaredDependencies>
-                                <ignoredUnusedDeclaredDependency>org.apache.maven:maven-compat:jar</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>io.micronaut:micronaut-http-client</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.junit.jupiter:junit-jupiter-engine</ignoredUnusedDeclaredDependency>
                             </ignoredUnusedDeclaredDependencies>
-                            <ignoredUsedUndeclaredDependencies>
-                                <!-- NOTE: the maven-dependency-plugin insists that we need this, seems to be
-                                     some sort of missing transient dependency for maven-invoker-plugin ITs -->
-                                <ignoredUsedUndeclaredDependency>org.eclipse.sisu:org.eclipse.sisu.plexus:jar</ignoredUsedUndeclaredDependency>
-                            </ignoredUsedUndeclaredDependencies>
+
                             <ignoredNonTestScopedDependencies>
-                                <ignoredNonTestScopedDependency>org.eclipse.sisu:org.eclipse.sisu.plexus:jar</ignoredNonTestScopedDependency>
+                                <ignoredNonTestScopedDependency>com.fasterxml.jackson.core:jackson-core</ignoredNonTestScopedDependency>
                             </ignoredNonTestScopedDependencies>
+
                         </configuration>
                     </execution>
                 </executions>
