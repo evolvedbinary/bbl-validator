@@ -386,9 +386,8 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <version>3.2.0</version>
                 <configuration>
-                    <autoVersionSubmodules>true</autoVersionSubmodules>
                     <tagNameFormat>bbl-validator-@{project.version}</tagNameFormat>
-                    <releaseProfiles>bbl-validator</releaseProfiles>
+                    <releaseProfiles>bbl-validator-release</releaseProfiles>
                 </configuration>
             </plugin>
         </plugins>
@@ -396,7 +395,7 @@
 
     <profiles>
         <profile>
-            <id>bbl-validator</id>
+            <id>bbl-validator-release</id>
             <build>
                 <plugins>
                     <plugin>
@@ -479,6 +478,9 @@
                         <artifactId>central-publishing-maven-plugin</artifactId>
                         <configuration>
                             <publishingServerId>central</publishingServerId>
+                            <deploymentName>${project.artifactId}-${project.version}</deploymentName>
+                            <failOnBuildFailure>true</failOnBuildFailure>
+                            <waitUntil>validated</waitUntil>
                         </configuration>
                     </plugin>
                 </plugins>
