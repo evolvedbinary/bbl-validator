@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.evolvedbinary.bblValidator</groupId>
@@ -30,7 +29,7 @@
         <dependency>
             <groupId>io.micronaut</groupId>
             <artifactId>micronaut-http-server-netty</artifactId>
-        <!-- TODO(YB) check for updates    https://www.mend.io/vulnerability-database/CVE-2025-67735 -->
+            <!-- TODO(YB) check for updates    https://www.mend.io/vulnerability-database/CVE-2025-67735 -->
             <version>4.10.12</version>
         </dependency>
 
@@ -127,7 +126,6 @@
             <version>4.5.14</version>
         </dependency>
 
-         <!-- https://mvnrepository.com/artifact/com.fasterxml.uuid/java-uuid-generator -->
         <dependency>
             <groupId>com.fasterxml.uuid</groupId>
             <artifactId>java-uuid-generator</artifactId>
@@ -170,6 +168,13 @@
         </dependency>
     </dependencies>
 
+    <scm>
+        <connection>scm:git:https://github.com/evolvedbinary/bbl-validator.git</connection>
+        <developerConnection>scm:git:https://github.com/evolvedbinary/bbl-validator.git</developerConnection>
+        <url>https://github.com/evolvedbinary/bbl-validator</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <build>
         <resources>
             <resource>
@@ -183,6 +188,36 @@
                 <filtering>true</filtering>
             </testResource>
         </testResources>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.5.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.3.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.12.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>3.2.8</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.sonatype.central</groupId>
+                    <artifactId>central-publishing-maven-plugin</artifactId>
+                    <version>0.9.0</version>
+                    <extensions>true</extensions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
 
         <plugins>
             <!-- Maven Compiler Plugin -->
@@ -260,7 +295,7 @@
                                                 <destName>bbl-validator-${project.version}.jar</destName>
                                             </file>
                                         </files>
-                                        </inline>
+                                    </inline>
                                 </assembly>
                             </build>
                         </image>
@@ -276,6 +311,180 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Build version plugin -->
+            <plugin>
+                <groupId>com.code54.mojo</groupId>
+                <artifactId>buildversion-plugin</artifactId>
+                <version>1.0.3</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>set-properties</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.9.0</version>
+                <executions>
+                    <execution>
+                        <id>analyze</id>
+                        <goals>
+                            <goal>analyze-only</goal>
+                        </goals>
+                        <configuration>
+                            <failOnWarning>true</failOnWarning>
+                            <ignoredUnusedDeclaredDependencies>
+                                <ignoredUnusedDeclaredDependency>org.apache.maven:maven-compat:jar</ignoredUnusedDeclaredDependency>
+                            </ignoredUnusedDeclaredDependencies>
+                            <ignoredUsedUndeclaredDependencies>
+                                <!-- NOTE: the maven-dependency-plugin insists that we need this, seems to be
+                                     some sort of missing transient dependency for maven-invoker-plugin ITs -->
+                                <ignoredUsedUndeclaredDependency>org.eclipse.sisu:org.eclipse.sisu.plexus:jar</ignoredUsedUndeclaredDependency>
+                            </ignoredUsedUndeclaredDependencies>
+                            <ignoredNonTestScopedDependencies>
+                                <ignoredNonTestScopedDependency>org.eclipse.sisu:org.eclipse.sisu.plexus:jar</ignoredNonTestScopedDependency>
+                            </ignoredNonTestScopedDependencies>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Maven Jar plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                        <manifestEntries>
+                            <Build-Tag>${build-tag}</Build-Tag>
+                            <Git-Commit>${build-commit}</Git-Commit>
+                            <Git-Commit-Abbrev>${build-commit-abbrev}</Git-Commit-Abbrev>
+                            <Git-Commit-Timestamp>${build-tstamp}</Git-Commit-Timestamp>
+                            <Build-Version>${build-version}</Build-Version>
+                            <Build-Timestamp>${maven.build.timestamp}</Build-Timestamp>
+                            <Source-Repository>${project.scm.connection}</Source-Repository>
+                            <Description>${project.description}</Description>
+                            <Implementation-URL>${project.url}</Implementation-URL>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <!-- Maven Release plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <tagNameFormat>bbl-validator-@{project.version}</tagNameFormat>
+                    <releaseProfiles>bbl-validator-release</releaseProfiles>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>bbl-validator-release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                                    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                </manifest>
+                                <manifestEntries>
+                                    <Build-Tag>${build-tag}</Build-Tag>
+                                    <Git-Commit>${build-commit}</Git-Commit>
+                                    <Git-Commit-Abbrev>${build-commit-abbrev}</Git-Commit-Abbrev>
+                                    <Git-Commit-Timestamp>${build-tstamp}</Git-Commit-Timestamp>
+                                    <Build-Version>${build-version}</Build-Version>
+                                    <Build-Timestamp>${maven.build.timestamp}</Build-Timestamp>
+                                    <Source-Repository>${project.scm.connection}</Source-Repository>
+                                    <Description>${project.description}</Description>
+                                    <Implementation-URL>${project.url}</Implementation-URL>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                                    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                </manifest>
+                                <manifestEntries>
+                                    <Build-Tag>${build-tag}</Build-Tag>
+                                    <Git-Commit>${build-commit}</Git-Commit>
+                                    <Git-Commit-Abbrev>${build-commit-abbrev}</Git-Commit-Abbrev>
+                                    <Git-Commit-Timestamp>${build-tstamp}</Git-Commit-Timestamp>
+                                    <Build-Version>${build-version}</Build-Version>
+                                    <Build-Timestamp>${maven.build.timestamp}</Build-Timestamp>
+                                    <Source-Repository>${project.scm.connection}</Source-Repository>
+                                    <Description>${project.description}</Description>
+                                    <Implementation-URL>${project.url}</Implementation-URL>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                            <deploymentName>${project.artifactId}-${project.version}</deploymentName>
+                            <failOnBuildFailure>true</failOnBuildFailure>
+                            <waitUntil>validated</waitUntil>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
