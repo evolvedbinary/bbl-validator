@@ -17,4 +17,8 @@ jobs:
           distribution: liberica
           cache: maven
       - name: Build with Maven
-        run: mvn -V -B package
+        run: mvn -V -B package -DskipTests
+      - name: Run Tests
+        run: mvn -V -B test
+      - name: Check JavaDoc
+        run: mvn -V -B javadoc:javadoc
