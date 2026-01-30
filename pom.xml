@@ -24,12 +24,45 @@
     <artifactId>bbl-validator</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
+    <name>Broadband Label Validator Web API and Form</name>
+    <description>A Web API and Form for validating FCC Broadband Label data files</description>
+    <url>https://bbl.evolvedbinary.com</url>
+    <inceptionYear>2025</inceptionYear>
+
     <organization>
         <name>Evolved Binary</name>
         <url>https://www.evolvedbinary.com</url>
     </organization>
 
-    <inceptionYear>2025</inceptionYear>
+    <licenses>
+        <license>
+            <name>Apache License Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Younes Bahloul</name>
+            <organization>Evolved Binary</organization>
+            <url>https://www.evolvedbinary.com</url>
+            <email>younes@evolvedbinary.com</email>
+        </developer>
+        <developer>
+            <name>Adam Retter</name>
+            <organization>Evolved Binary</organization>
+            <url>https://www.evolvedbinary.com</url>
+            <email>adam@evolvedbinary.com</email>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:https://github.com/evolvedbinary/bbl-validator.git</connection>
+        <developerConnection>scm:git:https://github.com/evolvedbinary/bbl-validator.git</developerConnection>
+        <url>https://github.com/evolvedbinary/bbl-validator</url>
+        <tag>HEAD</tag>
+    </scm>
 
     <properties>
         <project.build.source>21</project.build.source>
@@ -277,13 +310,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <scm>
-        <connection>scm:git:https://github.com/evolvedbinary/bbl-validator.git</connection>
-        <developerConnection>scm:git:https://github.com/evolvedbinary/bbl-validator.git</developerConnection>
-        <url>https://github.com/evolvedbinary/bbl-validator</url>
-        <tag>HEAD</tag>
-    </scm>
 
     <build>
         <resources>
