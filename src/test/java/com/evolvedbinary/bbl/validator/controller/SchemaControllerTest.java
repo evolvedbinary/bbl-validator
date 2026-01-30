@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.evolvedbinary.bblValidator.controller;
+package com.evolvedbinary.bbl.validator.controller;
 
 
-import com.evolvedbinary.bblValidator.dto.ErrorResponse;
-import com.evolvedbinary.bblValidator.dto.SchemaInfo;
+import com.evolvedbinary.bbl.validator.dto.ErrorResponse;
+import com.evolvedbinary.bbl.validator.dto.SchemaInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,8 +36,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Optional;
 
-import static com.evolvedbinary.bblValidator.controller.SchemaController.CSV_SCHEMA_MEDIA_TYPE;
-import static com.evolvedbinary.bblValidator.filter.ApiVersionFilter.BBLVALIDATOR_VERSION_HEADER;
+import static com.evolvedbinary.bbl.validator.controller.SchemaController.CSV_SCHEMA_MEDIA_TYPE;
+import static com.evolvedbinary.bbl.validator.filter.ApiVersionFilter.BBLVALIDATOR_VERSION_HEADER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;

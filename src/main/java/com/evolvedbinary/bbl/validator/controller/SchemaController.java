@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.evolvedbinary.bblValidator.controller;
+package com.evolvedbinary.bbl.validator.controller;
 
-import com.evolvedbinary.bblValidator.dto.ErrorResponse;
-import com.evolvedbinary.bblValidator.dto.SchemaInfo;
-import com.evolvedbinary.bblValidator.service.SchemaService;
+import com.evolvedbinary.bbl.validator.dto.ErrorResponse;
+import com.evolvedbinary.bbl.validator.dto.SchemaInfo;
+import com.evolvedbinary.bbl.validator.service.SchemaService;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;

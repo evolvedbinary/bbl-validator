@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.evolvedbinary.bblValidator.service;
+package com.evolvedbinary.bbl.validator.service;
 
-import com.evolvedbinary.bblValidator.dto.SchemaInfo;
+import com.evolvedbinary.bbl.validator.dto.SchemaInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.annotation.Value;
 import jakarta.annotation.PostConstruct;

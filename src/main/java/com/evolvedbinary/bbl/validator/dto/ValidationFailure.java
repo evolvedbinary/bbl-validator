@@ -13,27 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.evolvedbinary.bblValidator.dto;
+package com.evolvedbinary.bbl.validator.dto;
 
 import io.micronaut.serde.annotation.Serdeable;
 
 /**
- * Data transfer object representing the API version information.
+ * Data transfer object representing a validation failure with location information.
  */
 @Serdeable
-public class ApiVersion {
+public class ValidationFailure {
+    
+    private final String message;
+    private final int line;
+    private final int column;
 
-    private String version;
-
-    public ApiVersion(final String version) {
-        this.version = version;
+    public ValidationFailure(final String message, final int line, final int column) {
+        this.message = message;
+        this.line = line;
+        this.column = column;
     }
 
-    public String getVersion() {
-        return version;
+    public String getMessage() {
+        return message;
     }
 
-    public void setVersion(final String version) {
-        this.version = version;
+    public int getLine() {
+        return line;
     }
+
+    public int getColumn() {
+        return column;
+    }
+
 }
