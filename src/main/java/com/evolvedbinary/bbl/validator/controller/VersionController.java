@@ -13,15 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.evolvedbinary.bblValidator.dto;
+package com.evolvedbinary.bbl.validator.controller;
 
-/**
- * This interface serves as a marker for all response types that can be returned
- * by a controller.
- *
- * @see ErrorResponse
- * @see ValidationResponse
- */
-public sealed interface ResponseObject permits ErrorResponse, ValidationResponse {
+import com.evolvedbinary.bbl.validator.dto.ApiVersion;
+import io.micronaut.context.annotation.Value;
+import io.micronaut.http.MediaType;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.Produces;
 
+@Controller
+public class VersionController {
+
+    @Value("${api.version}")
+    String version;
+
+    @Get("/version")
+    @Produces(MediaType.APPLICATION_JSON)
+    public ApiVersion getVersion() {
+        return new ApiVersion(version);
+    }
 }

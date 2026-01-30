@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.evolvedbinary.bblValidator.controller;
+package com.evolvedbinary.bbl.validator.controller;
 
-import com.evolvedbinary.bblValidator.dto.ErrorResponse;
-import com.evolvedbinary.bblValidator.dto.ValidationResponse;
+import com.evolvedbinary.bbl.validator.dto.ErrorResponse;
+import com.evolvedbinary.bbl.validator.dto.ValidationResponse;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.http.*;
 import io.micronaut.http.client.HttpClient;
@@ -33,7 +33,7 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.evolvedbinary.bblValidator.filter.ApiVersionFilter.BBLVALIDATOR_VERSION_HEADER;
+import static com.evolvedbinary.bbl.validator.filter.ApiVersionFilter.BBLVALIDATOR_VERSION_HEADER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;

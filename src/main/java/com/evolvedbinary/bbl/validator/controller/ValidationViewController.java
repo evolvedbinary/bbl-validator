@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.evolvedbinary.bblValidator.controller;
+package com.evolvedbinary.bbl.validator.controller;
 
-import com.evolvedbinary.bblValidator.dto.ErrorResponse;
-import com.evolvedbinary.bblValidator.dto.ValidationFailure;
-import com.evolvedbinary.bblValidator.dto.ValidationResponse;
-import com.evolvedbinary.bblValidator.service.CsvValidationService;
-import com.evolvedbinary.bblValidator.service.FileDownloadService;
-import com.evolvedbinary.bblValidator.service.SchemaService;
+import com.evolvedbinary.bbl.validator.dto.ErrorResponse;
+import com.evolvedbinary.bbl.validator.dto.ValidationFailure;
+import com.evolvedbinary.bbl.validator.dto.ValidationResponse;
+import com.evolvedbinary.bbl.validator.service.CsvValidationService;
+import com.evolvedbinary.bbl.validator.service.FileDownloadService;
+import com.evolvedbinary.bbl.validator.service.SchemaService;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Body;
@@ -29,8 +29,6 @@ import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.views.View;
 import jakarta.inject.Inject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;

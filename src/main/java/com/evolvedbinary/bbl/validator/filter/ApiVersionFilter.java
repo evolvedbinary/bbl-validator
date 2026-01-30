@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.evolvedbinary.bblValidator.filter;
+package com.evolvedbinary.bbl.validator.filter;
 
 import io.micronaut.context.annotation.Value;
 import io.micronaut.http.HttpRequest;

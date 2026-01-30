@@ -20,7 +20,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.evolvedbinary.bblValidator</groupId>
+    <groupId>com.evolvedbinary.bbl</groupId>
     <artifactId>bbl-validator</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
@@ -76,7 +76,7 @@
         <micronaut.runtime>netty</micronaut.runtime>
         <jackson.version>2.19.1</jackson.version>
         <junit.version>6.0.2</junit.version>
-        <exec.mainClass>com.evolvedbinary.bblValidator.Application</exec.mainClass>
+        <exec.mainClass>com.evolvedbinary.bbl.validator.Application</exec.mainClass>
     </properties>
 
     <dependencies>

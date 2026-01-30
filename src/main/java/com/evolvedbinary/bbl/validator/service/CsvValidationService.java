@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.evolvedbinary.bblValidator.service;
+package com.evolvedbinary.bbl.validator.service;
 
-import com.evolvedbinary.bblValidator.dto.ValidationFailure;
+import com.evolvedbinary.bbl.validator.dto.ValidationFailure;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.slf4j.Logger;

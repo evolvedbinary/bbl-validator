@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.evolvedbinary.bblValidator;
+package com.evolvedbinary.bbl.validator;
 
 import io.micronaut.runtime.Micronaut;
 

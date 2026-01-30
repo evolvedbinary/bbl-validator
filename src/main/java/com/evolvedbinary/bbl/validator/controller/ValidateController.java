@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.evolvedbinary.bblValidator.controller;
+package com.evolvedbinary.bbl.validator.controller;
 
-import com.evolvedbinary.bblValidator.dto.ErrorResponse;
-import com.evolvedbinary.bblValidator.dto.ResponseObject;
-import com.evolvedbinary.bblValidator.dto.ValidationForm;
-import com.evolvedbinary.bblValidator.dto.ValidationResponse;
-import com.evolvedbinary.bblValidator.service.CsvValidationService;
-import com.evolvedbinary.bblValidator.service.FileDownloadService;
-import com.evolvedbinary.bblValidator.service.SchemaService;
+import com.evolvedbinary.bbl.validator.dto.ErrorResponse;
+import com.evolvedbinary.bbl.validator.dto.ResponseObject;
+import com.evolvedbinary.bbl.validator.dto.ValidationForm;
+import com.evolvedbinary.bbl.validator.dto.ValidationResponse;
+import com.evolvedbinary.bbl.validator.service.CsvValidationService;
+import com.evolvedbinary.bbl.validator.service.FileDownloadService;
+import com.evolvedbinary.bbl.validator.service.SchemaService;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
